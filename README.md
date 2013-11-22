@@ -1,9 +1,9 @@
 innerbuilder
 ============
 
-[IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that generates an inner builder class as described in Effective Java.
+[IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that generates an inner builder class as described in Effective Java. Follow [@analytically](http://twitter.com/analytically) for updates.
 
-Follow [@analytically](http://twitter.com/analytically).
+![screenshot](screenshot.png)
 
 ```java
 public class YourTypicalBean {
