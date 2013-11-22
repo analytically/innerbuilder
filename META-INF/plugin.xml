@@ -1,0 +1,24 @@
+<idea-plugin version="2" url="https://github.com/analytically/innerbuilder">
+    <name>InnerBuilder</name>
+
+    <!-- Unique identifier of the plugin. Cannot be changed between the plugin versions. -->
+    <id>InnerBuilder</id>
+
+    <description><![CDATA[
+      Adds a new action 'builder' in the generate menu (alt + ins). The action generates an inner builder class as
+      described in Effective Java.
+      ]]>
+    </description>
+    <version>1.0</version>
+    <vendor email="mathias.bogaert@gmail.com" url="https://github.com/analytically">Mathias Bogaert</vendor>
+    <idea-version since-build="91.13"/>
+
+    <actions>
+        <action id="innerbuilder.group"
+                class="org.jetbrains.plugins.innerbuilder.GenerateInnerBuilderAction"
+                text="Builder" description="Generates an inner builder class as described in Effective Java">
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup2"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
+        </action>
+    </actions>
+</idea-plugin>
