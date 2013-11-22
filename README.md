@@ -1,7 +1,7 @@
 innerbuilder
 ============
 
-Intellij plugin that generates an inner builder class as described in Effective Java.
+[IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that generates an inner builder class as described in Effective Java.
 
 Follow [@analytically](http://twitter.com/analytically).
 
@@ -16,7 +16,6 @@ public class YourTypicalBean {
     bar = builder.bar;
     foobar = builder.foobar;
   }
-
 
   public static final class Builder {
     private final String foo;
@@ -43,3 +42,17 @@ public class YourTypicalBean {
   }
 }
 ```
+
+### Installation
+
+Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
+
+### Usage
+
+Use `SHIFT+ALT+B` or `ALT-INSERT` and select `Builder`. Choose the fields to be included and press `OK`.
+
+### License
+
+Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+Copyright 2013 [Mathias Bogaert](mailto:mathias.bogaert@gmail.com).
