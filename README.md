@@ -1,7 +1,10 @@
 innerbuilder
 ============
 
-[IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that generates an inner builder class as described in Effective Java. Follow [@analytically](http://twitter.com/analytically) for updates.
+[IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
+which generates an inner builder class as described in Effective Java.
+
+Follow [@analytically](http://twitter.com/analytically) for updates.
 
 ![screenshot](screenshot.png)
 

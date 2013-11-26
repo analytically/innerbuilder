@@ -4,11 +4,7 @@
     <!-- Unique identifier of the plugin. Cannot be changed between the plugin versions. -->
     <id>InnerBuilder</id>
 
-    <description><![CDATA[
-      Adds a new action 'Builder' in the Generate menu (Alt+Insert). The action generates an inner builder class as
-      described in Effective Java.
-      ]]>
-    </description>
+    <description><![CDATA[Adds a 'Builder' action to the Generate menu (Alt+Insert) which generates an inner builder class as described in Effective Java.]]></description>
     <version>1.0.1</version>
     <vendor email="mathias.bogaert@gmail.com" url="https://github.com/analytically">Mathias Bogaert</vendor>
     <idea-version since-build="91.13"/>
