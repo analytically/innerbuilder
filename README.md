@@ -26,6 +26,12 @@ public class YourTypicalBean {
       this.foo = foo;
     }
 
+    public Builder(YourTypicalBean copy) {
+      this.foo = copy.foo;
+      this.bar = copy.bar;
+      this.foobar = copy.foobar;
+    }
+
     public Builder bar(String bar) {
       this.bar = bar;
       return this;
@@ -49,7 +55,7 @@ Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
 
 ### Usage
 
-Use `SHIFT+ALT+B` or `ALT-INSERT` and select `Builder`. Choose the fields to be included and press `OK`.
+Use `Shift+Alt+B` or `Alt+Insert` and select `Builder`. Choose the fields to be included and press `OK`.
 
 ### License
 

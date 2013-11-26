@@ -112,6 +112,26 @@ public class GenerateInnerBuilderWorker {
         constructor.append("}");
         addOrReplaceMethod((PsiClass) builderClass, constructor.toString());
 
+        // copy builder constructor, accepting a clazz instance
+        StringBuilder copyConstructor = new StringBuilder();
+        copyConstructor.append("public Builder(").append(clazz.getName()).append(" copy) {");
+        for (PsiField field : finalFields) {
+            copyConstructor.append("this.");
+            copyConstructor.append(field.getName());
+            copyConstructor.append("= copy.");
+            copyConstructor.append(field.getName());
+            copyConstructor.append(";");
+        }
+        for (PsiField field : nonFinalFields) {
+            copyConstructor.append("this.");
+            copyConstructor.append(field.getName());
+            copyConstructor.append("= copy.");
+            copyConstructor.append(field.getName());
+            copyConstructor.append(";");
+        }
+        copyConstructor.append("}");
+        addOrReplaceMethod((PsiClass) builderClass, copyConstructor.toString());
+
         // builder methods
         for (PsiField field : nonFinalFields) {
             String setMethodText = "public "
