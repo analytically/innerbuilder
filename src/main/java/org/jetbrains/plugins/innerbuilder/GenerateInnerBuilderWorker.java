@@ -20,6 +20,7 @@ import java.util.List;
  * @author Mathias Bogaert
  */
 public class GenerateInnerBuilderWorker {
+    public static String BUILDER_CLASS_NAME = "Builder";
     private static final Logger logger = Logger.getInstance(GenerateInnerBuilderWorker.class);
 
     private final PsiElementFactory psiElementFactory;
@@ -33,34 +34,49 @@ public class GenerateInnerBuilderWorker {
     }
 
     public void execute(Iterable<PsiField> fields) throws IncorrectOperationException {
-        PsiElement builderClass = clazz.findInnerClassByName("Builder", false);
+        boolean containingClassIsAbstract = clazz.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT);
+
+        PsiClass builderClass = clazz.findInnerClassByName(BUILDER_CLASS_NAME, false);
+        PsiClass superBuilderClass = clazz.getSuperClass().findInnerClassByName(BUILDER_CLASS_NAME, false);
 
         if (builderClass == null) {
-            builderClass = clazz.add(psiElementFactory.createClass("Builder"));
+            builderClass = (PsiClass) clazz.add(psiElementFactory.createClass(BUILDER_CLASS_NAME));
+            if (superBuilderClass != null) {
+                builderClass.getExtendsList().add(psiElementFactory.createKeyword("extends"));
+                builderClass.getExtendsList().add(psiElementFactory.createReferenceExpression(superBuilderClass));
+            }
 
-            // builder classes are static final
-            ((PsiClass) builderClass).getModifierList().setModifierProperty(PsiModifier.STATIC, true);
-            ((PsiClass) builderClass).getModifierList().setModifierProperty(PsiModifier.FINAL, true);
+            // builder classes are static
+            builderClass.getModifierList().setModifierProperty(PsiModifier.STATIC, true);
+            if (containingClassIsAbstract) {
+                builderClass.getModifierList().setModifierProperty(PsiModifier.ABSTRACT, true);
+            }
         }
 
         // the owning class should have a private constructor accepting a builder
-        StringBuilder constructorTakingBuilderBuilder = new StringBuilder();
-        constructorTakingBuilderBuilder.append("private ").append(clazz.getName()).append("(Builder builder) {");
+        StringBuilder constructorTakingBuilder = new StringBuilder();
+        if (!containingClassIsAbstract) {
+            constructorTakingBuilder.append("private ");
+        }
+        else {
+            constructorTakingBuilder.append("protected ");
+        }
+        constructorTakingBuilder.append(clazz.getName()).append("(Builder builder) {");
+        if (superBuilderClass != null) {
+            constructorTakingBuilder.append("super(builder);");
+        }
         for (PsiField field : fields) {
             final PsiMethod setterPrototype = PropertyUtil.generateSetterPrototype(field);
             final PsiMethod setter = clazz.findMethodBySignature(setterPrototype, true);
 
             if (setter == null) {
-                constructorTakingBuilderBuilder.append(field.getName()).append("= builder.")
-                        .append(field.getName()).append(";");
+                constructorTakingBuilder.append(field.getName()).append("= builder.").append(field.getName()).append(";");
             } else {
-                constructorTakingBuilderBuilder.append(setter.getName()).append("(builder.")
-                        .append(field.getName()).append(");");
+                constructorTakingBuilder.append(setter.getName()).append("(builder.").append(field.getName()).append(");");
             }
         }
-        constructorTakingBuilderBuilder.append("}");
-        psiElementFactory.createConstructor();
-        codeStyleManager.reformat(addOrReplaceMethod(clazz, constructorTakingBuilderBuilder.toString()));
+        constructorTakingBuilder.append("}");
+        codeStyleManager.reformat(addOrReplaceMethod(clazz, constructorTakingBuilder.toString()));
 
         // final fields become constructor fields in the builder
         List<PsiField> finalFields = new ArrayList<PsiField>();
@@ -72,7 +88,7 @@ public class GenerateInnerBuilderWorker {
 
         // add all final fields to the builder
         for (PsiField field : finalFields) {
-            if (!hasField(((PsiClass) builderClass), field)) {
+            if (!hasField((builderClass), field)) {
                 PsiField builderField = psiElementFactory.createField(field.getName(), field.getType());
                 builderField.getModifierList().setModifierProperty(PsiModifier.FINAL, true);
                 builderClass.add(builderField);
@@ -82,7 +98,7 @@ public class GenerateInnerBuilderWorker {
         // add all non-final fields to the builder
         List<PsiField> nonFinalFields = new ArrayList<PsiField>();
         for (PsiField field : fields) {
-            if (!hasField(((PsiClass) builderClass), field) && !field.hasModifierProperty(PsiModifier.FINAL)) {
+            if (!hasField((builderClass), field) && !field.hasModifierProperty(PsiModifier.FINAL)) {
                 nonFinalFields.add(field);
 
                 PsiField builderField = psiElementFactory.createField(field.getName(), field.getType());
@@ -93,6 +109,7 @@ public class GenerateInnerBuilderWorker {
         // builder constructor, accepting the final fields
         StringBuilder constructor = new StringBuilder();
         constructor.append("public Builder(");
+
         for (Iterator<PsiField> iterator = finalFields.iterator(); iterator.hasNext(); ) {
             PsiField field = iterator.next();
             constructor.append(field.getTypeElement().getType().getCanonicalText()).append(" ").append(field.getName());
@@ -103,34 +120,22 @@ public class GenerateInnerBuilderWorker {
         }
         constructor.append(") {");
         for (PsiField field : finalFields) {
-            constructor.append("this.");
-            constructor.append(field.getName());
-            constructor.append("=");
-            constructor.append(field.getName());
-            constructor.append(";");
+            constructor.append("this.").append(field.getName()).append("=").append(field.getName()).append(";");
         }
         constructor.append("}");
-        addOrReplaceMethod((PsiClass) builderClass, constructor.toString());
+        addOrReplaceMethod(builderClass, constructor.toString());
 
         // copy builder constructor, accepting a clazz instance
         StringBuilder copyConstructor = new StringBuilder();
         copyConstructor.append("public Builder(").append(clazz.getName()).append(" copy) {");
         for (PsiField field : finalFields) {
-            copyConstructor.append("this.");
-            copyConstructor.append(field.getName());
-            copyConstructor.append("= copy.");
-            copyConstructor.append(field.getName());
-            copyConstructor.append(";");
+            copyConstructor.append(field.getName()).append("= copy.").append(field.getName()).append(";");
         }
         for (PsiField field : nonFinalFields) {
-            copyConstructor.append("this.");
-            copyConstructor.append(field.getName());
-            copyConstructor.append("= copy.");
-            copyConstructor.append(field.getName());
-            copyConstructor.append(";");
+            copyConstructor.append(field.getName()).append("= copy.").append(field.getName()).append(";");
         }
         copyConstructor.append("}");
-        addOrReplaceMethod((PsiClass) builderClass, copyConstructor.toString());
+        addOrReplaceMethod(builderClass, copyConstructor.toString());
 
         // builder methods
         for (PsiField field : nonFinalFields) {
@@ -140,18 +145,26 @@ public class GenerateInnerBuilderWorker {
                     + "this." + field.getName() + "=" + field.getName() + ";"
                     + "return this;"
                     + "}";
-            addOrReplaceMethod((PsiClass) builderClass, setMethodText);
+            addOrReplaceMethod(builderClass, setMethodText);
         }
 
-        // builder.build() method
-        StringBuilder buildMethod = new StringBuilder();
-        buildMethod.append("public ")
-                .append(clazz.getName())
-                .append(" build() { return new ")
-                .append(clazz.getName())
-                .append("(this);}");
+        if (!containingClassIsAbstract) {
+            // builder.build() method
+            StringBuilder buildMethod = new StringBuilder("public ")
+                    .append(clazz.getName())
+                    .append(" build() { return new ")
+                    .append(clazz.getName())
+                    .append("(this);}");
 
-        addOrReplaceMethod((PsiClass) builderClass, buildMethod.toString());
+            addOrReplaceMethod(builderClass, buildMethod.toString());
+        } else {
+            StringBuilder abstractBuildMethod = new StringBuilder("public abstract <T extends ")
+                    .append(clazz.getName())
+                    .append("> T build();");
+
+            addOrReplaceMethod(builderClass, abstractBuildMethod.toString());
+        }
+
         codeStyleManager.reformat(builderClass);
     }
 
@@ -162,6 +175,7 @@ public class GenerateInnerBuilderWorker {
     protected PsiMethod addOrReplaceMethod(PsiClass target, String methodText) {
         PsiMethod newMethod = psiElementFactory.createMethodFromText(methodText, null);
         PsiMethod existingMethod = target.findMethodBySignature(newMethod, false);
+
         if (existingMethod != null) {
             existingMethod.replace(newMethod);
         } else {
