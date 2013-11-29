@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class GenerateInnerBuilderWorker {
     public static String BUILDER_CLASS_NAME = "Builder";
-    private static final Logger logger = Logger.getInstance(GenerateInnerBuilderWorker.class);
+    private static final Logger log = Logger.getInstance("#org.jetbrains.plugins.innerbuilder.GenerateInnerBuilderWorker");
 
     private final PsiElementFactory psiElementFactory;
     private final CodeStyleManager codeStyleManager;
@@ -185,7 +185,7 @@ public class GenerateInnerBuilderWorker {
     }
 
     /**
-     * Generates the toString() code for the specified class and selected
+     * Generates the builder code for the specified class and selected
      * fields, doing the work through a WriteAction ran by a CommandProcessor.
      */
     public static void executeGenerateActionLater(final PsiClass clazz,
@@ -216,8 +216,7 @@ public class GenerateInnerBuilderWorker {
      * @throws RuntimeException is thrown for severe exceptions
      */
     public static void handleExeption(Project project, Exception e) throws RuntimeException {
-        e.printStackTrace(); // must print stacktrace to see caused in IDEA log / console
-        logger.error(e);
+        log.info(e);
 
         if (e instanceof PluginException) {
             // plugin related error - could be recoverable.

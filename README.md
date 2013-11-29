@@ -54,6 +54,11 @@ public class YourTypicalBean {
 
 ### Installation
 
+In IntelliJ IDEA, go to `File` > `Settings` > `Plugins`. Click the `Browse repositories` button, in the search field, type `innerbuilder`.
+It should show up in the plugins list. Right-click it and select `Download and Install`.
+
+#### Manual installation
+
 Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
 
 ### Usage
