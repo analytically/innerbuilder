@@ -65,6 +65,10 @@ Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
 
 Use `Shift+Alt+B` or `Alt+Insert` and select `Builder`. Choose the fields to be included and press `OK`.
 
+### Rate
+
+If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](http://plugins.jetbrains.com/plugin/7354).
+
 ### License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

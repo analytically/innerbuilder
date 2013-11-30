@@ -37,7 +37,7 @@ public class GenerateInnerBuilderWorker {
         boolean containingClassIsAbstract = clazz.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT);
 
         PsiClass builderClass = clazz.findInnerClassByName(BUILDER_CLASS_NAME, false);
-        PsiClass superBuilderClass = clazz.getSuperClass().findInnerClassByName(BUILDER_CLASS_NAME, false);
+        PsiClass superBuilderClass = findBuilderClass(clazz.getSuperClass());
 
         if (builderClass == null) {
             builderClass = (PsiClass) clazz.add(psiElementFactory.createClass(BUILDER_CLASS_NAME));
@@ -157,15 +157,18 @@ public class GenerateInnerBuilderWorker {
                     .append("(this);}");
 
             addOrReplaceMethod(builderClass, buildMethod.toString());
-        } else {
-            StringBuilder abstractBuildMethod = new StringBuilder("public abstract <T extends ")
-                    .append(clazz.getName())
-                    .append("> T build();");
-
-            addOrReplaceMethod(builderClass, abstractBuildMethod.toString());
         }
 
         codeStyleManager.reformat(builderClass);
+    }
+
+    protected PsiClass findBuilderClass(PsiClass clazz) {
+        if (clazz == null) return null;
+        PsiClass builderClass = clazz.findInnerClassByName(BUILDER_CLASS_NAME, false);
+        if (builderClass == null) {
+            return findBuilderClass(clazz.getSuperClass());
+        }
+        return builderClass;
     }
 
     protected boolean hasField(PsiClass clazz, PsiField field) {
