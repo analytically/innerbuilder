@@ -49,6 +49,7 @@ public class GenerateInnerBuilderWorker {
             // builder classes are static
             builderClass.getModifierList().setModifierProperty(PsiModifier.STATIC, true);
             if (containingClassIsAbstract) {
+                builderClass.getModifierList().setModifierProperty(PsiModifier.PROTECTED, true);
                 builderClass.getModifierList().setModifierProperty(PsiModifier.ABSTRACT, true);
             }
         }
