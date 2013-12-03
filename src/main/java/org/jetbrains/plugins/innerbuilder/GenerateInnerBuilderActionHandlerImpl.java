@@ -135,6 +135,11 @@ public class GenerateInnerBuilderActionHandlerImpl extends EditorWriteActionHand
                 continue;
             }
 
+            // remove final fields that are assigned in the declaration
+            if(list.hasModifierProperty(PsiModifier.FINAL) && field.getInitializer() != null) {
+                continue;
+            }
+
             availableFields.add(field);
         }
 
