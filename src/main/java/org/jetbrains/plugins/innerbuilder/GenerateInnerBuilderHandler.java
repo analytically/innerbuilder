@@ -1,11 +1,11 @@
 package org.jetbrains.plugins.innerbuilder;
 
 import com.intellij.codeInsight.CodeInsightUtilBase;
-import com.intellij.codeInsight.generation.*;
+import com.intellij.codeInsight.generation.OverrideImplementUtil;
+import com.intellij.codeInsight.generation.PsiFieldMember;
 import com.intellij.ide.util.MemberChooser;
 import com.intellij.lang.LanguageCodeInsightActionHandler;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
@@ -24,7 +24,6 @@ import java.util.List;
 
 public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHandler {
     public static String BUILDER_CLASS_NAME = "Builder";
-    private static final Logger LOG = Logger.getInstance("#org.jetbrains.plugins.innerbuilder.GenerateInnerBuilderWorker");
 
     @Override
     public boolean isValidFor(Editor editor, PsiFile file) {
@@ -40,8 +39,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         }
         PsiDocumentManager.getInstance(project).commitAllDocuments();
 
-        final List<PsiElementClassMember> members = chooseFields(file, editor, project);
-        if (members == null || members.isEmpty()) return;
+        final List<PsiFieldMember> fieldMembers = chooseFields(file, editor, project);
+        if (fieldMembers == null || fieldMembers.isEmpty()) return;
 
         ApplicationManager.getApplication().runWriteAction(new Runnable() {
             CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
@@ -50,25 +49,23 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
             @Override
             public void run() {
                 int offset = editor.getCaretModel().getOffset();
-                PsiElement context = file.findElementAt(offset);
-                if (context == null) return;
-                PsiClass clazz = PsiTreeUtil.getParentOfType(context, PsiClass.class, false);
-                if (clazz == null || clazz.isInterface()) return;
+                PsiElement element = file.findElementAt(offset);
+                PsiClass clazz = PsiTreeUtil.getParentOfType(element, PsiClass.class);
 
                 PsiClass builderClass = clazz.findInnerClassByName(BUILDER_CLASS_NAME, false);
                 if (builderClass == null) {
                     builderClass = (PsiClass) clazz.add(psiElementFactory.createClass(BUILDER_CLASS_NAME));
+
                     // builder classes are static and final
                     builderClass.getModifierList().setModifierProperty(PsiModifier.STATIC, true);
                     builderClass.getModifierList().setModifierProperty(PsiModifier.FINAL, true);
                 }
 
                 StringBuilder constructorTakingBuilder = new StringBuilder();
-                constructorTakingBuilder.append("private ");
-                constructorTakingBuilder.append(clazz.getName()).append("(Builder builder) {");
+                constructorTakingBuilder.append("private ").append(clazz.getName()).append("(Builder builder) {");
 
-                for (PsiElementClassMember member : members) {
-                    PsiField field = ((PsiFieldMember) member).getElement();
+                for (PsiFieldMember member : fieldMembers) {
+                    PsiField field = member.getElement();
 
                     final PsiMethod setterPrototype = PropertyUtil.generateSetterPrototype(field);
                     final PsiMethod setter = clazz.findMethodBySignature(setterPrototype, true);
@@ -84,8 +81,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 // final fields become constructor fields in the builder
                 List<PsiField> finalFields = new ArrayList<PsiField>();
-                for (PsiElementClassMember member : members) {
-                    PsiField field = ((PsiFieldMember) member).getElement();
+                for (PsiFieldMember member : fieldMembers) {
+                    PsiField field = member.getElement();
 
                     if (field.hasModifierProperty(PsiModifier.FINAL)) {
                         finalFields.add(field);
@@ -103,8 +100,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 // add all non-final fields to the builder
                 List<PsiField> nonFinalFields = new ArrayList<PsiField>();
-                for (PsiElementClassMember member : members) {
-                    PsiField field = ((PsiFieldMember) member).getElement();
+                for (PsiFieldMember member : fieldMembers) {
+                    PsiField field = member.getElement();
 
                     if (!hasField((builderClass), field) && !field.hasModifierProperty(PsiModifier.FINAL)) {
                         nonFinalFields.add(field);
@@ -157,14 +154,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 }
 
                 // builder.build() method
-                StringBuilder buildMethod = new StringBuilder("public ")
-                        .append(clazz.getName())
-                        .append(" build() { return new ")
-                        .append(clazz.getName())
-                        .append("(this);}");
-
-                addOrReplaceMethod(builderClass, buildMethod.toString());
-
+                addOrReplaceMethod(builderClass, "public " + clazz.getName() + " build() { return new " + clazz.getName() + "(this);}");
                 codeStyleManager.reformat(builderClass);
             }
 
@@ -192,18 +182,19 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
     }
 
     public static boolean isApplicable(PsiFile file, Editor editor) {
-        List<PsiElementClassMember> targetElements = getFields(file, editor);
+        List<PsiFieldMember> targetElements = getFields(file, editor);
         return targetElements != null && targetElements.size() > 0;
     }
 
     @Nullable
-    private static List<PsiElementClassMember> chooseFields(PsiFile file, Editor editor, Project project) {
-        final List<PsiElementClassMember> targetElements = getFields(file, editor);
+    private static List<PsiFieldMember> chooseFields(PsiFile file, Editor editor, Project project) {
+        final List<PsiFieldMember> targetElements = getFields(file, editor);
         if (targetElements == null || targetElements.size() == 0) return null;
         if (!ApplicationManager.getApplication().isUnitTestMode()) {
-            MemberChooser<PsiElementClassMember> chooser = new MemberChooser<PsiElementClassMember>(targetElements.toArray(new PsiElementClassMember[targetElements.size()]), false, true, project);
+            MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(targetElements.toArray(new PsiFieldMember[targetElements.size()]), false, true, project);
             chooser.setTitle("Choose fields to be included in Builder");
             chooser.setCopyJavadocVisible(false);
+            chooser.selectElements(targetElements.toArray(new PsiFieldMember[targetElements.size()]));
             chooser.show();
 
             if (chooser.getExitCode() != DialogWrapper.OK_EXIT_CODE) return null;
@@ -215,14 +206,14 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
     }
 
     @Nullable
-    private static List<PsiElementClassMember> getFields(PsiFile file, Editor editor) {
+    private static List<PsiFieldMember> getFields(PsiFile file, Editor editor) {
         int offset = editor.getCaretModel().getOffset();
         PsiElement element = file.findElementAt(offset);
         if (element == null) return null;
         PsiClass aClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
         if (aClass == null) return null;
 
-        List<PsiElementClassMember> result = new ArrayList<PsiElementClassMember>();
+        List<PsiFieldMember> result = new ArrayList<PsiFieldMember>();
 
         while (aClass != null) {
             collectFieldsInClass(element, aClass, result);
@@ -233,7 +224,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         return result;
     }
 
-    private static void collectFieldsInClass(PsiElement element, final PsiClass aClass, List<PsiElementClassMember> result) {
+    private static void collectFieldsInClass(PsiElement element, final PsiClass aClass, List<PsiFieldMember> result) {
         final PsiField[] fields = aClass.getAllFields();
         PsiResolveHelper helper = JavaPsiFacade.getInstance(aClass.getProject()).getResolveHelper();
         for (PsiField field : fields) {
@@ -270,7 +261,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 }
 
                 final PsiClass containingClass = field.getContainingClass();
-                result.add(new PsiFieldMember(field, TypeConversionUtil.getSuperClassSubstitutor(containingClass, aClass, PsiSubstitutor.EMPTY)));
+                result.add(0, new PsiFieldMember(field, TypeConversionUtil.getSuperClassSubstitutor(containingClass, aClass, PsiSubstitutor.EMPTY)));
             }
         }
     }
