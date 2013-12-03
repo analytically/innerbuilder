@@ -21,7 +21,7 @@
         <action id="InnerBuilder.generate"
                 class="org.jetbrains.plugins.innerbuilder.InnerBuilderAction"
                 text="Builder..." description="Generates an inner builder class as described in Effective Java">
-            <add-to-group group-id="GenerateGroup" anchor="after"/>
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup2"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
         </action>
     </actions>
