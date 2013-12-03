@@ -3,3 +3,8 @@
 # Package Files #
 *.war
 *.ear
+
+.idea
+*.iml
+.DS_Store
+out
