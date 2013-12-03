@@ -14,10 +14,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PropertyUtil;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.PsiUtil;
 import com.intellij.psi.util.TypeConversionUtil;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,103 +191,14 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         return false;
     }
 
-    private PsiGenerationInfo<PsiMethod> generateDelegatePrototype(PsiMethodMember methodCandidate, PsiElement target) throws IncorrectOperationException {
-        PsiMethod method = GenerateMembersUtil.substituteGenericMethod(methodCandidate.getElement(), methodCandidate.getSubstitutor());
-        clearMethod(method);
-
-        clearModifiers(method);
-
-        @NonNls StringBuffer call = new StringBuffer();
-
-        PsiModifierList modifierList = null;
-
-        if (method.getReturnType() != PsiType.VOID) {
-            call.append("return ");
-        }
-
-        boolean isMethodStatic = methodCandidate.getElement().hasModifierProperty(PsiModifier.STATIC);
-        if (target instanceof PsiField) {
-            PsiField field = (PsiField) target;
-            modifierList = field.getModifierList();
-            final String name = field.getName();
-
-            final PsiParameter[] parameters = method.getParameterList().getParameters();
-            for (PsiParameter parameter : parameters) {
-                if (name.equals(parameter.getName())) {
-                    call.append("this.");
-                    break;
-                }
-
-                call.append(name);
-            }
-            call.append(".");
-        } else if (target instanceof PsiMethod) {
-            PsiMethod m = (PsiMethod) target;
-            modifierList = m.getModifierList();
-            call.append(m.getName());
-            call.append("().");
-        }
-
-        call.append(method.getName());
-        call.append("(");
-        final PsiParameter[] parameters = method.getParameterList().getParameters();
-        for (int j = 0; j < parameters.length; j++) {
-            PsiParameter parameter = parameters[j];
-            if (j > 0) call.append(",");
-            call.append(parameter.getName());
-        }
-        call.append(");");
-
-        final PsiManager psiManager = method.getManager();
-        PsiStatement stmt = JavaPsiFacade.getInstance(psiManager.getProject()).getElementFactory().createStatementFromText(call.toString(), method);
-        stmt = (PsiStatement) CodeStyleManager.getInstance(psiManager.getProject()).reformat(stmt);
-        method.getBody().add(stmt);
-
-        for (PsiAnnotation annotation : methodCandidate.getElement().getModifierList().getAnnotations()) {
-            method.getModifierList().add(annotation.copy());
-        }
-
-        if (isMethodStatic || modifierList != null && modifierList.hasModifierProperty(PsiModifier.STATIC)) {
-            PsiUtil.setModifierProperty(method, PsiModifier.STATIC, true);
-        }
-
-        PsiUtil.setModifierProperty(method, PsiModifier.PUBLIC, true);
-
-        final PsiClass targetClass = ((PsiMember) target).getContainingClass();
-        LOG.assertTrue(targetClass != null);
-        PsiMethod overridden = targetClass.findMethodBySignature(method, true);
-        if (overridden != null && overridden.getContainingClass() != targetClass) {
-            OverrideImplementUtil.annotateOnOverrideImplement(method, targetClass, overridden);
-        }
-
-        return new PsiGenerationInfo<PsiMethod>(method);
-    }
-
-    private void clearMethod(PsiMethod method) throws IncorrectOperationException {
-        LOG.assertTrue(!method.isPhysical());
-        PsiCodeBlock codeBlock = JavaPsiFacade.getInstance(method.getProject()).getElementFactory().createCodeBlock();
-        if (method.getBody() != null) {
-            method.getBody().replace(codeBlock);
-        } else {
-            method.add(codeBlock);
-        }
-    }
-
-    private static void clearModifiers(PsiMethod method) throws IncorrectOperationException {
-        final PsiElement[] children = method.getModifierList().getChildren();
-        for (PsiElement child : children) {
-            if (child instanceof PsiKeyword) child.delete();
-        }
-    }
-
     public static boolean isApplicable(PsiFile file, Editor editor) {
-        List<PsiElementClassMember> targetElements = getTargetElements(file, editor);
+        List<PsiElementClassMember> targetElements = getFields(file, editor);
         return targetElements != null && targetElements.size() > 0;
     }
 
     @Nullable
     private static List<PsiElementClassMember> chooseFields(PsiFile file, Editor editor, Project project) {
-        final List<PsiElementClassMember> targetElements = getTargetElements(file, editor);
+        final List<PsiElementClassMember> targetElements = getFields(file, editor);
         if (targetElements == null || targetElements.size() == 0) return null;
         if (!ApplicationManager.getApplication().isUnitTestMode()) {
             MemberChooser<PsiElementClassMember> chooser = new MemberChooser<PsiElementClassMember>(targetElements.toArray(new PsiElementClassMember[targetElements.size()]), false, true, project);
@@ -307,7 +215,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
     }
 
     @Nullable
-    private static List<PsiElementClassMember> getTargetElements(PsiFile file, Editor editor) {
+    private static List<PsiElementClassMember> getFields(PsiFile file, Editor editor) {
         int offset = editor.getCaretModel().getOffset();
         PsiElement element = file.findElementAt(offset);
         if (element == null) return null;
@@ -317,7 +225,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         List<PsiElementClassMember> result = new ArrayList<PsiElementClassMember>();
 
         while (aClass != null) {
-            collectTargetsInClass(element, aClass, result);
+            collectFieldsInClass(element, aClass, result);
             if (aClass.hasModifierProperty(PsiModifier.STATIC)) break;
             aClass = PsiTreeUtil.getParentOfType(aClass, PsiClass.class, true);
         }
@@ -325,7 +233,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         return result;
     }
 
-    private static void collectTargetsInClass(PsiElement element, final PsiClass aClass, List<PsiElementClassMember> result) {
+    private static void collectFieldsInClass(PsiElement element, final PsiClass aClass, List<PsiElementClassMember> result) {
         final PsiField[] fields = aClass.getAllFields();
         PsiResolveHelper helper = JavaPsiFacade.getInstance(aClass.getProject()).getResolveHelper();
         for (PsiField field : fields) {
@@ -339,6 +247,11 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 // remove static fields
                 if (list.hasModifierProperty(PsiModifier.STATIC)) {
+                    continue;
+                }
+
+                // remove final fields that are assigned in the declaration
+                if (list.hasModifierProperty(PsiModifier.FINAL) && field.getInitializer() != null) {
                     continue;
                 }
 
