@@ -5,14 +5,14 @@
     <id>InnerBuilder</id>
 
     <description><![CDATA[Adds a 'Builder' action to the Generate menu (Alt+Insert) which generates an inner builder class as described in Effective Java.]]></description>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <vendor email="mathias.bogaert@gmail.com" url="https://github.com/analytically">Mathias Bogaert</vendor>
     <idea-version since-build="91.13"/>
 
     <actions>
-        <action id="innerbuilder.group"
-                class="org.jetbrains.plugins.innerbuilder.GenerateInnerBuilderAction"
-                text="Builder" description="Generates an inner builder class as described in Effective Java">
+        <action id="InnerBuilder.generate"
+                class="org.jetbrains.plugins.innerbuilder.InnerBuilderAction"
+                text="Builder..." description="Generates an inner builder class as described in Effective Java">
             <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup2"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
         </action>

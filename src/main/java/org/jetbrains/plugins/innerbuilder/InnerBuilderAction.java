@@ -1,0 +1,33 @@
+package org.jetbrains.plugins.innerbuilder;
+
+import com.intellij.codeInsight.CodeInsightActionHandler;
+import com.intellij.codeInsight.actions.BaseCodeInsightAction;
+import com.intellij.lang.Language;
+import com.intellij.lang.LanguageCodeInsightActionHandler;
+import com.intellij.lang.LanguageExtension;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiUtilBase;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * The IDEA action for this plugin, handles the generation of an inner <code>Builder</code> class.
+ *
+ * @author Mathias Bogaert
+ */
+public class InnerBuilderAction extends BaseCodeInsightAction {
+    private final GenerateInnerBuilderHandler handler = new GenerateInnerBuilderHandler();
+
+    @NotNull
+    @Override
+    protected CodeInsightActionHandler getHandler() {
+        return handler;
+    }
+
+    @Override
+    protected boolean isValidForFile(@NotNull Project project, @NotNull Editor editor, @NotNull final PsiFile file) {
+        return handler.isValidFor(editor, file);
+    }
+}
