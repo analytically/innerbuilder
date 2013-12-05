@@ -1,4 +1,4 @@
-innerbuilder
+innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.png)](https://travis-ci.org/analytically/innerbuilder)
 ============
 
 [IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
@@ -71,7 +71,7 @@ If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](ht
 
 ### Building
 
-Download the [Intellij IDEA Community Edition](http://www.jetbrains.com/idea/download/) zip into this folder. Run `mvn -Pdev package`.
+Run `mvn package`. It will download IntelliJ IDEA Community Edition to unpack jars and use them to compile the plugin.
 
 ### License
 
