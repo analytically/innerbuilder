@@ -1,9 +1,12 @@
 language: java
 jdk: openjdk6
 script: mvn clean package
-after_success:
-  - "git commit -a -m 'Committed by Travis-CI build number: $((TRAVIS_JOB_ID - 1))'"
-  - git push
+after_success: ./.travis/after_success.sh
 env:
   global:
-    secure: uerttMuw7SwEXGQqOjfaDik8eoYYAk6xJLQrHJj50Wi9yxe73XONxYGfHm2O0fu5cCAIsBTj4DANsIWIQqxERcliqylPwBdBUwTiYV8WftckYEmCEB+v6+gGtyJ58Vuo5YSnrlnur9+2Qd8IYjWa0fKTtQI7GCwZye0cTj8IJf0=
+    - secure: uerttMuw7SwEXGQqOjfaDik8eoYYAk6xJLQrHJj50Wi9yxe73XONxYGfHm2O0fu5cCAIsBTj4DANsIWIQqxERcliqylPwBdBUwTiYV8WftckYEmCEB+v6+gGtyJ58Vuo5YSnrlnur9+2Qd8IYjWa0fKTtQI7GCwZye0cTj8IJf0=
+    - GH_USER_NAME: analytically
+    - GH_PROJECT_NAME: innerbuilder
+    - GIT_AUTHOR_NAME: "TravisCI"
+    - GIT_AUTHOR_EMAIL: "noreply@travis-ci.org"
+    - CI_HOME=`pwd`/$TRAVIS_REPO_SLUG
