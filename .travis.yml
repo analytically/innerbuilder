@@ -1,7 +1,9 @@
 language: java
 jdk: openjdk6
 script: mvn clean package
-after_success: git add innerbuilder.jar & git commit -m "Committed by Travis-CI build number: $((TRAVIS_JOB_ID - 1))" & git push
+after_success:
+  - git commit -a -m "Committed by Travis-CI build number: $((TRAVIS_JOB_ID - 1))"
+  - git push
 env:
   global:
     secure: uerttMuw7SwEXGQqOjfaDik8eoYYAk6xJLQrHJj50Wi9yxe73XONxYGfHm2O0fu5cCAIsBTj4DANsIWIQqxERcliqylPwBdBUwTiYV8WftckYEmCEB+v6+gGtyJ58Vuo5YSnrlnur9+2Qd8IYjWa0fKTtQI7GCwZye0cTj8IJf0=
