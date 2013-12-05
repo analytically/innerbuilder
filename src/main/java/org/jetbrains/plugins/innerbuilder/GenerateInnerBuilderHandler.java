@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHandler {
-    public static String BUILDER_CLASS_NAME = "Builder";
+    private static final String BUILDER_CLASS_NAME = "Builder";
 
     @Override
     public boolean isValidFor(Editor editor, PsiFile file) {
@@ -188,20 +188,22 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
     @Nullable
     private static List<PsiFieldMember> chooseFields(PsiFile file, Editor editor, Project project) {
-        final List<PsiFieldMember> targetElements = getFields(file, editor);
-        if (targetElements == null || targetElements.size() == 0) return null;
+        final List<PsiFieldMember> members = getFields(file, editor);
+        if (members == null || members.size() == 0) return null;
         if (!ApplicationManager.getApplication().isUnitTestMode()) {
-            MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(targetElements.toArray(new PsiFieldMember[targetElements.size()]), false, true, project);
-            chooser.setTitle("Choose fields to be included in Builder");
+            PsiFieldMember[] memberArray = members.toArray(new PsiFieldMember[members.size()]);
+
+            MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(memberArray, false, true, project);
+            chooser.setTitle("Select Fields to Include in Builder");
             chooser.setCopyJavadocVisible(false);
-            chooser.selectElements(targetElements.toArray(new PsiFieldMember[targetElements.size()]));
+            chooser.selectElements(memberArray);
             chooser.show();
 
             if (chooser.getExitCode() != DialogWrapper.OK_EXIT_CODE) return null;
 
             return chooser.getSelectedElements();
         } else {
-            return targetElements;
+            return members;
         }
     }
 
