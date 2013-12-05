@@ -69,6 +69,10 @@ Use `Shift+Alt+B` or `Alt+Insert` and select `Builder`. Choose the fields to be 
 
 If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](http://plugins.jetbrains.com/plugin/7354).
 
+### Building
+
+Download the [Intellij IDEA Community Edition](http://www.jetbrains.com/idea/download/) zip into this folder. Run `mvn -Pdev package`.
+
 ### License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

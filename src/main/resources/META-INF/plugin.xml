@@ -1,9 +1,9 @@
 <idea-plugin version="2" url="https://github.com/analytically/innerbuilder">
     <id>InnerBuilder</id>
-    <name>InnerBuilder</name>
-    <version>1.0.3</version>
+    <name>${project.name}</name>
+    <version>${project.version}</version>
 
-    <description>Adds a Builder action to the Generate menu (Alt+Insert) which generates an inner builder class as described in Effective Java</description>
+    <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
       03.12.2013 - 1.0.3 - Now includes parent class fields in the chooser.<br>
@@ -20,7 +20,7 @@
     <actions>
         <action id="InnerBuilder.generate"
                 class="org.jetbrains.plugins.innerbuilder.InnerBuilderAction"
-                text="Builder..." description="Generates an inner builder class as described in Effective Java">
+                text="Builder..." description="${project.description}">
             <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup2"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
         </action>
