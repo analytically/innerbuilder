@@ -13,7 +13,7 @@ import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The IDEA action for this plugin, handles the generation of an inner <code>Builder</code> class.
+ * The IntelliJ IDEA action for this plugin, generates an inner builder class as described in Effective Java.
  *
  * @author Mathias Bogaert
  */

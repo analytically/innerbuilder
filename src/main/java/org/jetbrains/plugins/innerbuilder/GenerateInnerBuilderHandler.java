@@ -231,8 +231,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         List<PsiFieldMember> classFieldMembers = new ArrayList<PsiFieldMember>();
         PsiResolveHelper helper = JavaPsiFacade.getInstance(aClass.getProject()).getResolveHelper();
         for (PsiField field : fields) {
-            final PsiType type = field.getType();
-            if (helper.isAccessible(field, aClass, aClass) && type instanceof PsiClassType && !PsiTreeUtil.isAncestor(field, element, false)) {
+            if (helper.isAccessible(field, aClass, aClass) && !PsiTreeUtil.isAncestor(field, element, false)) {
                 PsiModifierList list = field.getModifierList();
                 // remove any fields without modifiers
                 if (list == null) {
