@@ -30,9 +30,9 @@ public class YourTypicalBean {
     }
 
     public Builder(YourTypicalBean copy) {
-      this.foo = copy.foo;
-      this.bar = copy.bar;
-      this.foobar = copy.foobar;
+      foo = copy.foo;
+      bar = copy.bar;
+      foobar = copy.foobar;
     }
 
     public Builder bar(String bar) {

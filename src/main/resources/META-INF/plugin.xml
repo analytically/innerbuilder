@@ -6,9 +6,10 @@
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
-      03.12.2013 - 1.0.3 - Now includes parent class fields in the chooser.<br>
-      29.11.2013 - 1.0.1 - Small fixup release.<br>
-      22.11.2013 - 1.0.0 - First release, based on an old codebase.<br>
+      06.12.2013 - 1.0.4 - Fixed generated field order.<br/>
+      03.12.2013 - 1.0.3 - Now includes parent class fields in the chooser.<br/>
+      29.11.2013 - 1.0.1 - Small fixup release.<br/>
+      22.11.2013 - 1.0.0 - First release, based on an old codebase.<br/>
       ]]>
     </change-notes>
 

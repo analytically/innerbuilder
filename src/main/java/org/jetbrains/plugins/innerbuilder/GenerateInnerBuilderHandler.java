@@ -227,7 +227,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
     }
 
     private static void collectFieldsInClass(PsiElement element, final PsiClass aClass, List<PsiFieldMember> result) {
-        final PsiField[] fields = aClass.getAllFields();
+        PsiField[] fields = aClass.getAllFields();
+        List<PsiFieldMember> classFieldMembers = new ArrayList<PsiFieldMember>();
         PsiResolveHelper helper = JavaPsiFacade.getInstance(aClass.getProject()).getResolveHelper();
         for (PsiField field : fields) {
             final PsiType type = field.getType();
@@ -263,9 +264,11 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 }
 
                 final PsiClass containingClass = field.getContainingClass();
-                result.add(0, new PsiFieldMember(field, TypeConversionUtil.getSuperClassSubstitutor(containingClass, aClass, PsiSubstitutor.EMPTY)));
+                classFieldMembers.add(new PsiFieldMember(field, TypeConversionUtil.getSuperClassSubstitutor(containingClass, aClass, PsiSubstitutor.EMPTY)));
             }
         }
+
+        result.addAll(0, classFieldMembers);
     }
 
     /**
