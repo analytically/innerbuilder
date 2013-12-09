@@ -77,37 +77,22 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     }
                 }
                 constructorTakingBuilder.append("}");
-                codeStyleManager.reformat(addOrReplaceMethod(clazz, constructorTakingBuilder.toString()));
+                codeStyleManager.reformat(addMethod(clazz, null, constructorTakingBuilder.toString()));
 
-                // final fields become constructor fields in the builder
-                List<PsiField> finalFields = new ArrayList<PsiField>();
+                List<PsiFieldMember> finalFields = new ArrayList<PsiFieldMember>();
+                List<PsiFieldMember> nonFinalFields = new ArrayList<PsiFieldMember>();
+
+                PsiElement addedField = null;
                 for (PsiFieldMember member : fieldMembers) {
                     PsiField field = member.getElement();
+
+                    addedField = addField(builderClass, addedField, field.getName(), field.getType());
 
                     if (field.hasModifierProperty(PsiModifier.FINAL)) {
-                        finalFields.add(field);
-                    }
-                }
-
-                // add all final fields to the builder
-                for (PsiField field : finalFields) {
-                    if (!hasField((builderClass), field)) {
-                        PsiField builderField = psiElementFactory.createField(field.getName(), field.getType());
-                        builderField.getModifierList().setModifierProperty(PsiModifier.FINAL, true);
-                        builderClass.add(builderField);
-                    }
-                }
-
-                // add all non-final fields to the builder
-                List<PsiField> nonFinalFields = new ArrayList<PsiField>();
-                for (PsiFieldMember member : fieldMembers) {
-                    PsiField field = member.getElement();
-
-                    if (!hasField((builderClass), field) && !field.hasModifierProperty(PsiModifier.FINAL)) {
-                        nonFinalFields.add(field);
-
-                        PsiField builderField = psiElementFactory.createField(field.getName(), field.getType());
-                        builderClass.add(builderField);
+                        finalFields.add(member);
+                        ((PsiField) addedField).getModifierList().setModifierProperty(PsiModifier.FINAL, true);
+                    } else {
+                        nonFinalFields.add(member);
                     }
                 }
 
@@ -115,63 +100,78 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 StringBuilder constructor = new StringBuilder();
                 constructor.append("public Builder(");
 
-                for (Iterator<PsiField> iterator = finalFields.iterator(); iterator.hasNext(); ) {
-                    PsiField field = iterator.next();
-                    constructor.append(field.getTypeElement().getType().getCanonicalText()).append(" ").append(field.getName());
+                for (Iterator<PsiFieldMember> iterator = finalFields.iterator(); iterator.hasNext(); ) {
+                    PsiFieldMember member = iterator.next();
+                    constructor.append(member.getElement().getType().getCanonicalText()).append(" ").append(member.getElement().getName());
 
                     if (iterator.hasNext()) {
-                        constructor.append(",");
+                        constructor.append(", ");
                     }
                 }
                 constructor.append(") {");
-                for (PsiField field : finalFields) {
-                    constructor.append("this.").append(field.getName()).append("=").append(field.getName()).append(";");
+                for (PsiFieldMember field : finalFields) {
+                    constructor.append("this.").append(field.getElement().getName()).append("=").append(field.getElement().getName()).append(";");
                 }
                 constructor.append("}");
-                addOrReplaceMethod(builderClass, constructor.toString());
+                addMethod(builderClass, null, constructor.toString());
 
                 // copy builder constructor, accepting a clazz instance
                 StringBuilder copyConstructor = new StringBuilder();
                 copyConstructor.append("public Builder(").append(clazz.getName()).append(" copy) {");
-                for (PsiField field : finalFields) {
-                    copyConstructor.append(field.getName()).append("= copy.").append(field.getName()).append(";");
+                for (PsiFieldMember member : finalFields) {
+                    copyConstructor.append(member.getElement().getName()).append("= copy.").append(member.getElement().getName()).append(";");
                 }
-                for (PsiField field : nonFinalFields) {
-                    copyConstructor.append(field.getName()).append("= copy.").append(field.getName()).append(";");
+                for (PsiFieldMember member : nonFinalFields) {
+                    copyConstructor.append(member.getElement().getName()).append("= copy.").append(member.getElement().getName()).append(";");
                 }
                 copyConstructor.append("}");
-                addOrReplaceMethod(builderClass, copyConstructor.toString());
+                addMethod(builderClass, null, copyConstructor.toString());
+
+                PsiElement added = null;
 
                 // builder methods
-                for (PsiField field : nonFinalFields) {
+                for (PsiFieldMember member : nonFinalFields) {
+                    PsiField field = member.getElement();
+
                     String setMethodText = "public "
-                            + "Builder" + " " + field.getName() + "(" + field.getTypeElement().getType().getCanonicalText()
+                            + "Builder" + " " + field.getName() + "(" + field.getType().getCanonicalText()
                             + " " + field.getName() + "){"
                             + "this." + field.getName() + "=" + field.getName() + ";"
                             + "return this;"
                             + "}";
-                    addOrReplaceMethod(builderClass, setMethodText);
+
+                    added = addMethod(builderClass, added, setMethodText);
                 }
 
                 // builder.build() method
-                addOrReplaceMethod(builderClass, "public " + clazz.getName() + " build() { return new " + clazz.getName() + "(this);}");
+                addMethod(builderClass, null, "public " + clazz.getName() + " build() { return new " + clazz.getName() + "(this);}");
                 codeStyleManager.reformat(builderClass);
             }
 
-            boolean hasField(PsiClass clazz, PsiField field) {
-                return clazz.findFieldByName(field.getName(), false) != null;
+            PsiElement addField(PsiClass target, PsiElement after, String name, PsiType type) {
+                PsiField existingField = target.findFieldByName(name, false);
+
+                if (existingField == null) {
+                    PsiField newField = psiElementFactory.createField(name, type);
+                    if (after != null) {
+                        return target.addAfter(newField, after);
+                    } else {
+                        return target.add(newField);
+                    }
+                } else return existingField;
             }
 
-            PsiMethod addOrReplaceMethod(PsiClass target, String methodText) {
+            PsiElement addMethod(PsiClass target, PsiElement after, String methodText) {
                 PsiMethod newMethod = psiElementFactory.createMethodFromText(methodText, null);
                 PsiMethod existingMethod = target.findMethodBySignature(newMethod, false);
 
-                if (existingMethod != null) {
-                    existingMethod.replace(newMethod);
-                } else {
-                    target.add(newMethod);
-                }
-                return newMethod;
+                if (existingMethod == null) {
+                    if (after != null) {
+                        return target.addAfter(newMethod, after);
+                    } else {
+                        return target.add(newMethod);
+                    }
+                } else return existingMethod;
             }
         });
     }
@@ -255,8 +255,10 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 // remove any logging fields
                 if ("org.apache.log4j.Logger".equals(field.getType().getCanonicalText())
+                        || "org.apache.logging.log4j.Logger".equals(field.getType().getCanonicalText())
                         || "java.util.logging.Logger".equals(field.getType().getCanonicalText())
                         || "org.slf4j.Logger".equals(field.getType().getCanonicalText())
+                        || "ch.qos.logback.classic.Logger".equals(field.getType().getCanonicalText())
                         || "net.sf.microlog.core.Logger".equals(field.getType().getCanonicalText())
                         || "org.apache.commons.logging.Log".equals(field.getType().getCanonicalText())) {
                     continue;
@@ -277,8 +279,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
      * @return true if the string has a lowercase character, false if not.
      */
     private static boolean hasLowerCaseChar(String s) {
-        char[] chars = s.toCharArray();
-        for (char c : chars) {
+        for (char c : s.toCharArray()) {
             if (Character.isLowerCase(c)) {
                 return true;
             }

@@ -17,7 +17,11 @@ public class YourTypicalBean {
   private YourTypicalBean(Builder builder) {
     foo = builder.foo;
     bar = builder.bar;
-    foobar = builder.foobar;
+    setFoobar(builder.foobar);
+  }
+
+  private void setFoobar(int foobar) {
+    this.foobar = foobar;
   }
 
   public static final class Builder {
