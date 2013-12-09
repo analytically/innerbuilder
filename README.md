@@ -11,23 +11,25 @@ Follow [@analytically](http://twitter.com/analytically) for updates.
 ```java
 public class YourTypicalBean {
   private final String foo;
-  private String bar;
-  private int foobar;
+  private String bar, baz;
+  private int qux;
 
   private YourTypicalBean(Builder builder) {
     foo = builder.foo;
     bar = builder.bar;
-    setFoobar(builder.foobar);
+    baz = builder.baz;
+    setQux(builder.qux);
   }
 
-  private void setFoobar(int foobar) {
-    this.foobar = foobar;
+  private void setQux(int qux) {
+    this.qux = qux;
   }
 
   public static final class Builder {
     private final String foo;
     private String bar;
-    private int foobar;
+    private String baz;
+    private int qux;
 
     public Builder(String foo) {
       this.foo = foo;
@@ -36,7 +38,8 @@ public class YourTypicalBean {
     public Builder(YourTypicalBean copy) {
       foo = copy.foo;
       bar = copy.bar;
-      foobar = copy.foobar;
+      baz = copy.baz;
+      qux = copy.qux;
     }
 
     public Builder bar(String bar) {
@@ -44,8 +47,13 @@ public class YourTypicalBean {
       return this;
     }
 
-    public Builder foobar(int foobar) {
-      this.foobar = foobar;
+    public Builder baz(String baz) {
+      this.baz = baz;
+      return this;
+    }
+
+    public Builder qux(int qux) {
+      this.qux = qux;
       return this;
     }
 
@@ -67,7 +75,9 @@ Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
 
 ### Usage
 
-Use `Shift+Alt+B` or `Alt+Insert` and select `Builder`. Choose the fields to be included and press `OK`.
+Use `Shift+Alt+B` or `Alt+Insert` and select `Builder`. Choose the fields to be included and press `OK`. When generating a
+builder when a builder already exists, the plugin will try to update it. It will add missing fields and builder methods, but
+never remove any fields or methods.
 
 ### Rate
 

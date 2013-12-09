@@ -24,6 +24,7 @@ import java.util.List;
 
 public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHandler {
     private static final String BUILDER_CLASS_NAME = "Builder";
+    private static final String JAVA_DOT_LANG = "java.lang.";
 
     @Override
     public boolean isValidFor(Editor editor, PsiFile file) {
@@ -48,8 +49,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
             @Override
             public void run() {
-                int offset = editor.getCaretModel().getOffset();
-                PsiElement element = file.findElementAt(offset);
+                PsiElement element = file.findElementAt(editor.getCaretModel().getOffset());
                 PsiClass clazz = PsiTreeUtil.getParentOfType(element, PsiClass.class);
 
                 PsiClass builderClass = clazz.findInnerClassByName(BUILDER_CLASS_NAME, false);
@@ -70,7 +70,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     final PsiMethod setterPrototype = PropertyUtil.generateSetterPrototype(field);
                     final PsiMethod setter = clazz.findMethodBySignature(setterPrototype, true);
 
-                    if (setter == null) {
+                    if (setter == null || field.getModifierList().hasModifierProperty(PsiModifier.FINAL)) {
                         constructorTakingBuilder.append(field.getName()).append("= builder.").append(field.getName()).append(";");
                     } else {
                         constructorTakingBuilder.append(setter.getName()).append("(builder.").append(field.getName()).append(");");
@@ -115,7 +115,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 constructor.append("}");
                 addMethod(builderClass, null, constructor.toString());
 
-                // copy builder constructor, accepting a clazz instance
+                // builder copy constructor, accepting a clazz instance
                 StringBuilder copyConstructor = new StringBuilder();
                 copyConstructor.append("public Builder(").append(clazz.getName()).append(" copy) {");
                 for (PsiFieldMember member : finalFields) {
@@ -149,7 +149,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
             PsiElement addField(PsiClass target, PsiElement after, String name, PsiType type) {
                 PsiField existingField = target.findFieldByName(name, false);
 
-                if (existingField == null) {
+                if (existingField == null || !areTypesPresentableEqual(existingField.getType(), type)) {
+                    if (existingField != null) existingField.delete();
                     PsiField newField = psiElementFactory.createField(name, type);
                     if (after != null) {
                         return target.addAfter(newField, after);
@@ -169,7 +170,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 if (existingMethod == null && newMethod.isConstructor()) {
                     for (PsiMethod constructor : target.getConstructors()) {
-                        if (constructor.isConstructor() && areParameterListsEqual(constructor.getParameterList(), newMethod.getParameterList())) {
+                        if (areParameterListsEqual(constructor.getParameterList(), newMethod.getParameterList())) {
                             existingMethod = constructor;
                             break;
                         }
@@ -203,19 +204,16 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
             }
 
             boolean areTypesPresentableEqual(PsiType type1, PsiType type2) {
-                if (null != type1 && null != type2) {
-                    final String type1Canonical = stripJavaLang(type1.getPresentableText());
-                    final String type2Canonical = stripJavaLang(type2.getPresentableText());
+                if (type1 != null && type2 != null) {
+                    String type1Canonical = stripJavaLang(type1.getPresentableText());
+                    String type2Canonical = stripJavaLang(type2.getPresentableText());
                     return type1Canonical.equals(type2Canonical);
-                } else return false;
+                }
+                return false;
             }
 
             private String stripJavaLang(String typeString) {
-                final String prefix = "java.lang.";
-                if (typeString.startsWith(prefix)) {
-                    typeString = typeString.substring(prefix.length());
-                }
-                return typeString;
+                return typeString.startsWith(JAVA_DOT_LANG) ? typeString.substring(JAVA_DOT_LANG.length()) : typeString;
             }
         });
     }
