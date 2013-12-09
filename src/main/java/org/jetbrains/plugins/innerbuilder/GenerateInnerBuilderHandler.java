@@ -77,7 +77,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     }
                 }
                 constructorTakingBuilder.append("}");
-                codeStyleManager.reformat(addMethod(clazz, null, constructorTakingBuilder.toString()));
+                addMethod(clazz, null, constructorTakingBuilder.toString(), true);
 
                 List<PsiFieldMember> finalFields = new ArrayList<PsiFieldMember>();
                 List<PsiFieldMember> nonFinalFields = new ArrayList<PsiFieldMember>();
@@ -125,7 +125,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     copyConstructor.append(member.getElement().getName()).append("= copy.").append(member.getElement().getName()).append(";");
                 }
                 copyConstructor.append("}");
-                addMethod(builderClass, null, copyConstructor.toString());
+                addMethod(builderClass, null, copyConstructor.toString(), true);
 
                 PsiElement added = null;
 
@@ -133,14 +133,12 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 for (PsiFieldMember member : nonFinalFields) {
                     PsiField field = member.getElement();
 
-                    String setMethodText = "public "
-                            + "Builder" + " " + field.getName() + "(" + field.getType().getCanonicalText()
-                            + " " + field.getName() + "){"
-                            + "this." + field.getName() + "=" + field.getName() + ";"
-                            + "return this;"
-                            + "}";
+                    String builderMethod = new StringBuilder().append("public Builder ")
+                            .append(field.getName()).append("(").append(field.getType().getCanonicalText()).append(" ")
+                            .append(field.getName()).append("){").append("this.").append(field.getName()).append("=")
+                            .append(field.getName()).append(";").append("return this;").append("}").toString();
 
-                    added = addMethod(builderClass, added, setMethodText);
+                    added = addMethod(builderClass, added, builderMethod);
                 }
 
                 // builder.build() method
@@ -162,8 +160,21 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
             }
 
             PsiElement addMethod(PsiClass target, PsiElement after, String methodText) {
+                return addMethod(target, after, methodText, false);
+            }
+
+            PsiElement addMethod(PsiClass target, PsiElement after, String methodText, boolean replace) {
                 PsiMethod newMethod = psiElementFactory.createMethodFromText(methodText, null);
                 PsiMethod existingMethod = target.findMethodBySignature(newMethod, false);
+
+                if (existingMethod == null && newMethod.isConstructor()) {
+                    for (PsiMethod constructor : target.getConstructors()) {
+                        if (constructor.isConstructor() && areParameterListsEqual(constructor.getParameterList(), newMethod.getParameterList())) {
+                            existingMethod = constructor;
+                            break;
+                        }
+                    }
+                }
 
                 if (existingMethod == null) {
                     if (after != null) {
@@ -171,7 +182,40 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     } else {
                         return target.add(newMethod);
                     }
-                } else return existingMethod;
+                } else if (replace) existingMethod.replace(newMethod);
+                return existingMethod;
+            }
+
+            boolean areParameterListsEqual(PsiParameterList paramList1, PsiParameterList paramList2) {
+                if (paramList1.getParametersCount() != paramList2.getParametersCount()) return false;
+
+                PsiParameter[] param1Params = paramList1.getParameters();
+                PsiParameter[] param2Params = paramList2.getParameters();
+                for (int i = 0; i < param1Params.length; i++) {
+                    PsiParameter param1Param = param1Params[i];
+                    PsiParameter param2Param = param2Params[i];
+
+                    if (!areTypesPresentableEqual(param1Param.getType(), param2Param.getType())) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            boolean areTypesPresentableEqual(PsiType type1, PsiType type2) {
+                if (null != type1 && null != type2) {
+                    final String type1Canonical = stripJavaLang(type1.getPresentableText());
+                    final String type2Canonical = stripJavaLang(type2.getPresentableText());
+                    return type1Canonical.equals(type2Canonical);
+                } else return false;
+            }
+
+            private String stripJavaLang(String typeString) {
+                final String prefix = "java.lang.";
+                if (typeString.startsWith(prefix)) {
+                    typeString = typeString.substring(prefix.length());
+                }
+                return typeString;
             }
         });
     }
