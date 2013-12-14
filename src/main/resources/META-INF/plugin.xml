@@ -6,7 +6,7 @@
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
-      09.12.2013 - 1.0.6 - Regenerating Builder classes should rewrite existing ones.<br/>
+      14.12.2013 - 1.0.6 - Regenerating Builder classes should rewrite existing ones, fixed field ordering in selection (superclasses on top).<br/>
       06.12.2013 - 1.0.5 - Fixed bug with primitive types.<br/>
       06.12.2013 - 1.0.4 - Fixed generated field order.<br/>
       03.12.2013 - 1.0.3 - Now includes parent class fields in the chooser.<br/>
