@@ -6,7 +6,7 @@
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
-      14.12.2013 - 1.0.6 - Regenerating Builder classes should rewrite existing ones, fixed field ordering in selection (superclasses on top).<br/>
+      14.12.2013 - 1.0.6 - Rewrites existing Builder classes, field ordering in chooser is now superclass-first.<br/>
       06.12.2013 - 1.0.5 - Fixed bug with primitive types.<br/>
       06.12.2013 - 1.0.4 - Fixed generated field order.<br/>
       03.12.2013 - 1.0.3 - Now includes parent class fields in the chooser.<br/>
@@ -17,8 +17,8 @@
 
     <vendor email="mathias.bogaert@gmail.com" url="https://github.com/analytically">Mathias Bogaert</vendor>
 
-    <!-- Intellij 11+ -->
-    <idea-version since-build="111.69"/>
+    <!-- Intellij 12+ -->
+    <idea-version since-build="123"/>
 
     <actions>
         <action id="InnerBuilder.generate"

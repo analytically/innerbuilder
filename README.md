@@ -66,8 +66,8 @@ public class YourTypicalBean {
 
 ### Installation
 
-In IntelliJ IDEA, go to `File` > `Settings` > `Plugins`. Click the `Browse repositories` button, in the search field, type `innerbuilder`.
-It should show up in the plugins list. Right-click it and select `Download and Install`.
+In IntelliJ IDEA 12 or later, go to `File` > `Settings` > `Plugins`. Click the `Browse repositories` button, in
+the search field, type `innerbuilder`. It should show up in the plugins list. Right-click it and select `Download and Install`.
 
 #### Manual installation
 
@@ -75,7 +75,7 @@ Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
 
 ### Usage
 
-Use `Shift+Alt+B` or `Alt+Insert` and select `Builder`. Choose the fields to be included and press `OK`. When generating a
+Use `Shift+Alt+B` or `Alt+Insert` and select `Builder...`. Choose the fields to be included and press `OK`. When generating a
 builder when a builder already exists, the plugin will try to update it. It will add missing fields and builder methods, but
 never remove any fields or methods.
 
@@ -91,4 +91,4 @@ Run `mvn package`. It will download IntelliJ IDEA Community Edition to unpack ja
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-Copyright 2013 [Mathias Bogaert](mailto:mathias.bogaert@gmail.com).
+Copyright 2013-2014 [Mathias Bogaert](mailto:mathias.bogaert@gmail.com).
