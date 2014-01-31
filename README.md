@@ -2,7 +2,7 @@ innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.pn
 ============
 
 [IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
-which generates an inner builder class as described in Effective Java.
+which generates an inner builder class as described in Effective Java. Works with IntelliJ IDEA 12.x and 13.x.
 
 Follow [@analytically](http://twitter.com/analytically) for updates.
 
@@ -66,12 +66,12 @@ public class YourTypicalBean {
 
 ### Installation
 
-In IntelliJ IDEA 12 or later, go to `File` > `Settings` > `Plugins`. Click the `Browse repositories` button, in
-the search field, type `innerbuilder`. It should show up in the plugins list. Right-click it and select `Download and Install`.
+In IntelliJ IDEA 12.x or later, go to `File` > `Settings` > `Plugins`. Click the `Browse repositories` button, in
+the search field, type `innerbuilder`. It should show up in the plugin list. Right-click it and select `Download and Install`.
 
 #### Manual installation
 
-Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` directory.
+Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` or `~/.IntelliJIdea13/config/plugins` directory.
 
 ### Usage
 
