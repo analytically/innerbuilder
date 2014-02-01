@@ -71,7 +71,7 @@ the search field, type `innerbuilder`. It should show up in the plugin list. Rig
 
 #### Manual installation
 
-Copy `innerbuilder.jar` to your `~/.IntelliJIdea12/config/plugins` or `~/.IntelliJIdea13/config/plugins` directory.
+Download the plugin jar `innerbuilder.jar` and select "Install Plugin From Disk" in IntelliJ's plugin preferences.
 
 ### Usage
 
