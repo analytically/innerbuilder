@@ -302,7 +302,9 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                         || "org.slf4j.Logger".equals(field.getType().getCanonicalText())
                         || "ch.qos.logback.classic.Logger".equals(field.getType().getCanonicalText())
                         || "net.sf.microlog.core.Logger".equals(field.getType().getCanonicalText())
-                        || "org.apache.commons.logging.Log".equals(field.getType().getCanonicalText())) {
+                        || "org.apache.commons.logging.Log".equals(field.getType().getCanonicalText())
+                        || "org.pmw.tinylog.Logger".equals(field.getType().getCanonicalText())
+                        || " org.jboss.logging.Logger".equals(field.getType().getCanonicalText())) {
                     continue;
                 }
 
