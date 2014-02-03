@@ -1,7 +1,16 @@
 language: java
 jdk: openjdk6
 script: mvn clean package
-after_success: ./after_success.sh
+after_success:
+  - cd /tmp
+  - git clone https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_PROJECT_NAME} innerbuilder
+  - cd innerbuilder
+  - cp $CI_HOME/innerbuilder.jar .
+  - git config --global user.name $GIT_AUTHOR_NAME
+  - git config --global user.email $GIT_AUTHOR_EMAIL
+  - git add innerbuilder.jar
+  - git commit -m "[ci skip] Committed by Travis-CI"
+  - git push https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_PROJECT_NAME} 2>&1
 env:
   global:
     - secure: wETu7SWmkKXQQI+pe5ypNG+SpJehCWy3pyaQInX30Wndvf+I+c3DOlPvvCB4Xu8m7L+R8x/jfxPFZv4H+JRBkyMKPGdm/9ooVFUfzZ+OZG3ajFyBQPnWy+9+QxqWxuvvKI1OTcgg+Lh1LX8c2vkViEr/qpIQXHEqCj8z0WC9yaM=
