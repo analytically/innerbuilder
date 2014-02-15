@@ -323,8 +323,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
      * @return true if the string has a lowercase character, false if not.
      */
     private static boolean hasLowerCaseChar(String s) {
-        for (char c : s.toCharArray()) {
-            if (Character.isLowerCase(c)) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLowerCase(s.charAt(i))) {
                 return true;
             }
         }
