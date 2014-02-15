@@ -117,7 +117,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 // builder copy constructor, accepting a clazz instance
                 StringBuilder copyConstructor = new StringBuilder();
-                copyConstructor.append("public Builder(").append(clazz.getName()).append(" copy) {");
+                copyConstructor.append("public Builder(").append(clazz.getQualifiedName()).append(" copy) {");
                 for (PsiFieldMember member : finalFields) {
                     copyConstructor.append(member.getElement().getName()).append("= copy.").append(member.getElement().getName()).append(";");
                 }
@@ -142,7 +142,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 }
 
                 // builder.build() method
-                addMethod(builderClass, null, "public " + clazz.getName() + " build() { return new " + clazz.getName() + "(this);}");
+                addMethod(builderClass, null, "public " + clazz.getQualifiedName() + " build() { return new " + clazz.getQualifiedName() + "(this);}");
                 codeStyleManager.reformat(builderClass);
             }
 
@@ -230,7 +230,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
     @Nullable
     private static List<PsiFieldMember> chooseFields(PsiFile file, Editor editor, Project project) {
-        final List<PsiFieldMember> members = getFields(file, editor);
+        List<PsiFieldMember> members = getFields(file, editor);
         if (members == null || members.size() == 0) return null;
         if (!ApplicationManager.getApplication().isUnitTestMode()) {
             PsiFieldMember[] memberArray = members.toArray(new PsiFieldMember[members.size()]);
@@ -254,39 +254,41 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         int offset = editor.getCaretModel().getOffset();
         PsiElement element = file.findElementAt(offset);
         if (element == null) return null;
-        PsiClass aClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
-        if (aClass == null) return null;
+        PsiClass clazz = PsiTreeUtil.getParentOfType(element, PsiClass.class);
+        if (clazz == null || clazz.hasModifierProperty(PsiModifier.ABSTRACT)) return null;
 
         List<PsiFieldMember> result = new ArrayList<PsiFieldMember>();
 
-        while (aClass != null) {
-            collectFieldsInClass(element, aClass, result);
-            if (aClass.hasModifierProperty(PsiModifier.STATIC)) break;
-            aClass = aClass.getSuperClass();
+        PsiClass classToExtractFieldsFrom = clazz;
+        while (classToExtractFieldsFrom != null) {
+            collectFieldsInClass(element, clazz, classToExtractFieldsFrom, result);
+            if (classToExtractFieldsFrom.hasModifierProperty(PsiModifier.STATIC)) break;
+            classToExtractFieldsFrom = classToExtractFieldsFrom.getSuperClass();
         }
 
         return result;
     }
 
-    private static void collectFieldsInClass(PsiElement element, final PsiClass aClass, List<PsiFieldMember> result) {
-        PsiField[] fields = aClass.getFields();
+    private static void collectFieldsInClass(PsiElement element, PsiClass accessObjectClass, PsiClass clazz, List<PsiFieldMember> result) {
         List<PsiFieldMember> classFieldMembers = new ArrayList<PsiFieldMember>();
-        PsiResolveHelper helper = JavaPsiFacade.getInstance(aClass.getProject()).getResolveHelper();
-        for (PsiField field : fields) {
-            if (helper.isAccessible(field, aClass, aClass) && !PsiTreeUtil.isAncestor(field, element, false)) {
-                PsiModifierList list = field.getModifierList();
-                // remove any fields without modifiers
-                if (list == null) {
-                    continue;
-                }
+        PsiResolveHelper helper = JavaPsiFacade.getInstance(clazz.getProject()).getResolveHelper();
+        for (PsiField field : clazz.getFields()) {
+            // check access to the field from the builder container class (eg. private superclass fields)
+            if (helper.isAccessible(field, accessObjectClass, clazz) && !PsiTreeUtil.isAncestor(field, element, false)) {
+                PsiModifierList fieldModifiers = field.getModifierList();
 
                 // remove static fields
-                if (list.hasModifierProperty(PsiModifier.STATIC)) {
+                if (fieldModifiers.hasModifierProperty(PsiModifier.STATIC)) {
                     continue;
                 }
 
                 // remove final fields that are assigned in the declaration
-                if (list.hasModifierProperty(PsiModifier.FINAL) && field.getInitializer() != null) {
+                if (fieldModifiers.hasModifierProperty(PsiModifier.FINAL) && field.getInitializer() != null) {
+                    continue;
+                }
+
+                // remove final superclass fields
+                if (!accessObjectClass.isEquivalentTo(clazz) && fieldModifiers.hasModifierProperty(PsiModifier.FINAL)) {
                     continue;
                 }
 
@@ -308,8 +310,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     continue;
                 }
 
-                final PsiClass containingClass = field.getContainingClass();
-                classFieldMembers.add(new PsiFieldMember(field, TypeConversionUtil.getSuperClassSubstitutor(containingClass, aClass, PsiSubstitutor.EMPTY)));
+                PsiClass containingClass = field.getContainingClass();
+                classFieldMembers.add(new PsiFieldMember(field, TypeConversionUtil.getSuperClassSubstitutor(containingClass, clazz, PsiSubstitutor.EMPTY)));
             }
         }
 
