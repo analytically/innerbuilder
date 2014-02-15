@@ -6,6 +6,7 @@
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
+      16.02.2014 - 1.0.8 - Don't include private superclass fields and allow fields with no access modifier.<br/>
       01.02.2014 - 1.0.7 - Ignore tinylog and JBoss logging fields.<br/>
       14.12.2013 - 1.0.6 - Rewrites existing Builder classes, field ordering in chooser is now superclass-first.<br/>
       06.12.2013 - 1.0.5 - Fixed bug with primitive types.<br/>
