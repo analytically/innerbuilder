@@ -275,20 +275,8 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         for (PsiField field : clazz.getFields()) {
             // check access to the field from the builder container class (eg. private superclass fields)
             if (helper.isAccessible(field, accessObjectClass, clazz) && !PsiTreeUtil.isAncestor(field, element, false)) {
-                PsiModifierList fieldModifiers = field.getModifierList();
-
                 // remove static fields
-                if (fieldModifiers.hasModifierProperty(PsiModifier.STATIC)) {
-                    continue;
-                }
-
-                // remove final fields that are assigned in the declaration
-                if (fieldModifiers.hasModifierProperty(PsiModifier.FINAL) && field.getInitializer() != null) {
-                    continue;
-                }
-
-                // remove final superclass fields
-                if (!accessObjectClass.isEquivalentTo(clazz) && fieldModifiers.hasModifierProperty(PsiModifier.FINAL)) {
+                if (field.hasModifierProperty(PsiModifier.STATIC)) {
                     continue;
                 }
 
@@ -308,6 +296,11 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                         || "org.pmw.tinylog.Logger".equals(field.getType().getCanonicalText())
                         || "org.jboss.logging.Logger".equals(field.getType().getCanonicalText())) {
                     continue;
+                }
+
+                if (field.hasModifierProperty(PsiModifier.FINAL)) {
+                    if (field.getInitializer() != null) continue; // remove final fields that are assigned in the declaration
+                    if (!accessObjectClass.isEquivalentTo(clazz)) continue; // remove final superclass fields
                 }
 
                 PsiClass containingClass = field.getContainingClass();
