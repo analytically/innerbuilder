@@ -291,9 +291,9 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                 }
             });
 
-            final JCheckBox copyConstructorCheckbox = new NonFocusableCheckBox("Generate copy constructor");
+            final JCheckBox copyConstructorCheckbox = new NonFocusableCheckBox("Generate builder copy constructor");
             copyConstructorCheckbox.setMnemonic('o');
-            newBuilderMethodCheckbox.setToolTipText("Generate a copy constructor or copy method");
+            newBuilderMethodCheckbox.setToolTipText("Generate a builder copy constructor or copy method");
             copyConstructorCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_COPYCONSTRUCTOR));
             copyConstructorCheckbox.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
