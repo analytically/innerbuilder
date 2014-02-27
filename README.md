@@ -21,7 +21,7 @@ public class YourTypicalBean {
     setQux(builder.qux);
   }
 
-  private void setQux(int qux) {
+  public void setQux(int qux) {
     this.qux = qux;
   }
 
@@ -33,13 +33,6 @@ public class YourTypicalBean {
 
     public Builder(String foo) {
       this.foo = foo;
-    }
-
-    public Builder(YourTypicalBean copy) {
-      foo = copy.foo;
-      bar = copy.bar;
-      baz = copy.baz;
-      qux = copy.qux;
     }
 
     public Builder bar(String bar) {

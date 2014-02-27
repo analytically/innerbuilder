@@ -36,13 +36,13 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
     private static final String JAVA_DOT_LANG = "java.lang.";
 
     @NonNls
-    private static final String PROP_NEWBUILDERMETHOD = "GenerateInnerBuilder.";
-
-    @NonNls
-    private static final String PROP_USEWITHNOTATION = "GenerateInnerBuilder.useWithNotation";
+    private static final String PROP_NEWBUILDERMETHOD = "GenerateInnerBuilder.newBuilderMethod";
 
     @NonNls
     private static final String PROP_COPYCONSTRUCTOR = "GenerateInnerBuilder.copyConstructor";
+
+    @NonNls
+    private static final String PROP_WITHNOTATION = "GenerateInnerBuilder.withNotation";
 
     @Override
     public boolean isValidFor(Editor editor, PsiFile file) {
@@ -131,7 +131,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                 boolean newBuilderMethod = propertiesComponent.getBoolean(PROP_NEWBUILDERMETHOD, false);
                 boolean copyConstructor = propertiesComponent.getBoolean(PROP_COPYCONSTRUCTOR, false);
-                boolean withNotation = propertiesComponent.getBoolean(PROP_USEWITHNOTATION, false);
+                boolean withNotation = propertiesComponent.getBoolean(PROP_WITHNOTATION, false);
 
                 // builder constructor, accepting the final fields
                 StringBuilder builderConstructorText = new StringBuilder();
@@ -304,10 +304,10 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
             final JCheckBox withNotationCheckbox = new NonFocusableCheckBox("Use 'with...' notation");
             withNotationCheckbox.setMnemonic('w');
             withNotationCheckbox.setToolTipText("Generate builder methods that start with 'with', eg. builder.withName(String name)");
-            withNotationCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_USEWITHNOTATION));
+            withNotationCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_WITHNOTATION));
             withNotationCheckbox.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
-                    propertiesComponent.setValue(PROP_USEWITHNOTATION, Boolean.toString(withNotationCheckbox.isSelected()));
+                    propertiesComponent.setValue(PROP_WITHNOTATION, Boolean.toString(withNotationCheckbox.isSelected()));
                 }
             });
 
