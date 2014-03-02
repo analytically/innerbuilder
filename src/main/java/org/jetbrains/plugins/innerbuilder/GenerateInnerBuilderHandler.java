@@ -36,6 +36,9 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
     private static final String JAVA_DOT_LANG = "java.lang.";
 
     @NonNls
+    private static final String PROP_FINALSETTERS = "GenerateInnerBuilder.finalSetters";
+
+    @NonNls
     private static final String PROP_NEWBUILDERMETHOD = "GenerateInnerBuilder.newBuilderMethod";
 
     @NonNls
@@ -80,6 +83,11 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     builderClass.getModifierList().setModifierProperty(PsiModifier.FINAL, true);
                 }
 
+                boolean finalSetters = propertiesComponent.getBoolean(PROP_FINALSETTERS, false);
+                boolean newBuilderMethod = propertiesComponent.getBoolean(PROP_NEWBUILDERMETHOD, false);
+                boolean copyConstructor = propertiesComponent.getBoolean(PROP_COPYCONSTRUCTOR, false);
+                boolean withNotation = propertiesComponent.getBoolean(PROP_WITHNOTATION, false);
+
                 StringBuilder constructorTakingBuilder = new StringBuilder();
                 constructorTakingBuilder.append("private ").append(clazz.getName()).append("(").append(builderClass.getName()).append(" builder) {");
 
@@ -111,7 +119,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
                     addedField = addField(builderClass, addedField, field.getName(), field.getType());
 
-                    if (field.hasModifierProperty(PsiModifier.FINAL)) {
+                    if (field.hasModifierProperty(PsiModifier.FINAL) && !finalSetters) {
                         if (!finalFields.isEmpty()) {
                             typedFinalFields.append(", ");
                             untypedFinalFields.append(", ");
@@ -128,10 +136,6 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                         nonFinalFields.add(member);
                     }
                 }
-
-                boolean newBuilderMethod = propertiesComponent.getBoolean(PROP_NEWBUILDERMETHOD, false);
-                boolean copyConstructor = propertiesComponent.getBoolean(PROP_COPYCONSTRUCTOR, false);
-                boolean withNotation = propertiesComponent.getBoolean(PROP_WITHNOTATION, false);
 
                 // builder constructor, accepting the final fields
                 StringBuilder builderConstructorText = new StringBuilder();
@@ -158,7 +162,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     if (newBuilderMethod) {
                         copyConstructorText.append("public static ").append(builderClass.getName()).append(" newBuilder(");
                         copyConstructorText.append(clazz.getQualifiedName()).append(" copy) { ").append(builderClass.getName()).append(" builder = new ")
-                                .append(builderClass.getName()).append("(" + untypedFinalFieldsCopy + ");");
+                                .append(builderClass.getName()).append("(").append(untypedFinalFieldsCopy).append(");");
                     } else {
                         copyConstructorText.append("public ").append(builderClass.getName()).append("(");
                         copyConstructorText.append(clazz.getQualifiedName()).append(" copy) {");
@@ -181,7 +185,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     PsiField field = member.getElement();
 
                     String methodName = withNotation ? "with" + capitalize(field.getName()) : field.getName();
-                    String builderMethod = new StringBuilder().append("public Builder ")
+                    String builderMethod = new StringBuilder("public Builder ")
                             .append(methodName).append("(").append(field.getType().getCanonicalText()).append(" ")
                             .append(field.getName()).append("){").append("this.").append(field.getName()).append("=")
                             .append(field.getName()).append(";").append("return this;").append("}").toString();
@@ -281,9 +285,18 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
         List<PsiFieldMember> members = getFields(file, editor);
         if (members == null || members.size() == 0) return null;
         if (!ApplicationManager.getApplication().isUnitTestMode()) {
-            final JCheckBox newBuilderMethodCheckbox = new NonFocusableCheckBox("Generate newBuilder() method");
+
+            final JCheckBox finalSettersCheckbox = new NonFocusableCheckBox("Generate builder methods for final fields");
+            finalSettersCheckbox.setMnemonic('f');
+            finalSettersCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_FINALSETTERS));
+            finalSettersCheckbox.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    propertiesComponent.setValue(PROP_FINALSETTERS, Boolean.toString(finalSettersCheckbox.isSelected()));
+                }
+            });
+
+            final JCheckBox newBuilderMethodCheckbox = new NonFocusableCheckBox("Generate static newBuilder() method");
             newBuilderMethodCheckbox.setMnemonic('n');
-            newBuilderMethodCheckbox.setToolTipText("Generate a method to construct the builder (no builder constructor)");
             newBuilderMethodCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_NEWBUILDERMETHOD));
             newBuilderMethodCheckbox.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
@@ -293,7 +306,6 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
             final JCheckBox copyConstructorCheckbox = new NonFocusableCheckBox("Generate builder copy constructor");
             copyConstructorCheckbox.setMnemonic('o');
-            newBuilderMethodCheckbox.setToolTipText("Generate a builder copy constructor or copy method");
             copyConstructorCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_COPYCONSTRUCTOR));
             copyConstructorCheckbox.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
@@ -303,7 +315,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
 
             final JCheckBox withNotationCheckbox = new NonFocusableCheckBox("Use 'with...' notation");
             withNotationCheckbox.setMnemonic('w');
-            withNotationCheckbox.setToolTipText("Generate builder methods that start with 'with', eg. builder.withName(String name)");
+            withNotationCheckbox.setToolTipText("Generate builder methods that start with 'with', for example: builder.withName(String name)");
             withNotationCheckbox.setSelected(propertiesComponent.isTrueValue(PROP_WITHNOTATION));
             withNotationCheckbox.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
@@ -314,7 +326,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
             PsiFieldMember[] memberArray = members.toArray(new PsiFieldMember[members.size()]);
 
             MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(memberArray, false, true, project, null,
-                    new JCheckBox[]{newBuilderMethodCheckbox, copyConstructorCheckbox, withNotationCheckbox});
+                    new JCheckBox[]{finalSettersCheckbox, newBuilderMethodCheckbox, copyConstructorCheckbox, withNotationCheckbox});
 
             chooser.setTitle("Select Fields to Include in Builder");
             chooser.selectElements(memberArray);
