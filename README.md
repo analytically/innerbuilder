@@ -4,7 +4,8 @@ innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.pn
 [IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
 which generates an inner builder class as described in Effective Java. Works with IntelliJ IDEA 12.x and 13.x.
 
-Follow [@analytically](http://twitter.com/analytically) for updates. 3/2/2014, 1000 installs! 14/2/2014, 1500 installs!
+Follow [@analytically](http://twitter.com/analytically) for updates. NEW in 1.1.0: generate builder methods for final fields,
+`newBuilder()` method instead of constructor, generating the copy constructor can now be turned off, `with...` notation.
 
 ![screenshot](screenshot.png)
 
