@@ -1,4 +1,4 @@
-innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.png)](https://travis-ci.org/analytically/innerbuilder)
+innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.svg?branch=master)](https://travis-ci.org/analytically/innerbuilder)
 ============
 
 [IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
