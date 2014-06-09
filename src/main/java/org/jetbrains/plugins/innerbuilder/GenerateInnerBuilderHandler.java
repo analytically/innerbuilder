@@ -169,7 +169,7 @@ public class GenerateInnerBuilderHandler implements LanguageCodeInsightActionHan
                     }
 
                     for (PsiFieldMember member : fieldMembers) {
-                        if (member.getElement().getModifierList().hasModifierProperty(PsiModifier.FINAL) && newBuilderMethod) continue;
+                        if (member.getElement().getModifierList().hasModifierProperty(PsiModifier.FINAL) && !finalSetters) continue;
                         if (newBuilderMethod) copyConstructorText.append("builder.");
                         copyConstructorText.append(member.getElement().getName()).append("= copy.").append(member.getElement().getName()).append(";");
                     }

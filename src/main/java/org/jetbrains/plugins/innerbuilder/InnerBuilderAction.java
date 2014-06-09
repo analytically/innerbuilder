@@ -2,14 +2,9 @@ package org.jetbrains.plugins.innerbuilder;
 
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.actions.BaseCodeInsightAction;
-import com.intellij.lang.Language;
-import com.intellij.lang.LanguageCodeInsightActionHandler;
-import com.intellij.lang.LanguageExtension;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiUtilBase;
 import org.jetbrains.annotations.NotNull;
 
 /**
