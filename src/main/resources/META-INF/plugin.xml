@@ -6,6 +6,7 @@
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
+      13.06.2014 - 1.1.1 - Bugfix for final fields in copy builder, thanks to neilg.<br/>
       27.02.2014 - 1.1.0 - Added checkboxes to customize the builder (new builder method, copy constructor and 'with' notation).<br/>
       16.02.2014 - 1.0.8 - Don't include private superclass fields and allow fields with no access modifier.<br/>
       01.02.2014 - 1.0.7 - Ignore tinylog and JBoss logging fields.<br/>
