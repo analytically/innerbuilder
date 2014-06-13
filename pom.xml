@@ -47,7 +47,7 @@
                 <version>2.5.1</version>
                 <configuration>
                     <compilerArguments>
-                        <extdirs>${project.build.directory}/dependency/IntelliJ-IDEA-CE/idea-IC-133.331/lib/</extdirs>
+                        <extdirs>${project.build.directory}/dependency/IntelliJ-IDEA-CE/idea-IC-135.909/lib/</extdirs>
                     </compilerArguments>
                     <source>1.6</source>
                     <target>1.6</target>
