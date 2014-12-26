@@ -34,7 +34,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>http://download.jetbrains.com/idea/ideaIC-13.1.6.tar.gz</url>
+                            <url>http://download-cf.jetbrains.com/idea/ideaIC-13.1.6.tar.gz</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/dependency/IntelliJ-IDEA-CE</outputDirectory>
                         </configuration>
@@ -47,7 +47,7 @@
                 <version>2.5.1</version>
                 <configuration>
                     <compilerArguments>
-                        <extdirs>${project.build.directory}/dependency/IntelliJ-IDEA-CE/idea-IC-135.909/lib/</extdirs>
+                        <extdirs>${project.build.directory}/dependency/IntelliJ-IDEA-CE/idea-IC-135.1306/lib/</extdirs>
                     </compilerArguments>
                     <source>1.6</source>
                     <target>1.6</target>
