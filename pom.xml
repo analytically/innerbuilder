@@ -34,7 +34,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>http://download-cf.jetbrains.com/idea/ideaIC-13.1.6.zip</url>
+                            <url>http://download.jetbrains.com/idea/ideaIU-13.1.6.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/dependency/IntelliJ-IDEA-CE</outputDirectory>
                         </configuration>
