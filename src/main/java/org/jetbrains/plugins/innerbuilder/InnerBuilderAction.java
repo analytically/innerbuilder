@@ -16,7 +16,7 @@ import com.intellij.psi.PsiFile;
  * @author  Mathias Bogaert
  */
 public class InnerBuilderAction extends BaseCodeInsightAction {
-    private final GenerateInnerBuilderHandler handler = new GenerateInnerBuilderHandler();
+    private final InnerBuilderHandler handler = new InnerBuilderHandler();
 
     @NotNull
     @Override
