@@ -11,10 +11,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <ij.plugin>true</ij.plugin>
     </properties>
 
     <build>
-        <finalName>innerbuilder</finalName>
+        <finalName>innerbuilder-${version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -22,6 +23,14 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>com.guidewire.build</groupId>
+                <artifactId>ijplugin-maven-plugin</artifactId>
+                <version>0.2.6-SNAPSHOT</version>
+                <configuration>
+                    <manifestLocation>src/main/resources/META-INF/plugin.xml</manifestLocation>
+                </configuration>
+            </plugin>            
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>

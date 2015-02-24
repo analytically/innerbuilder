@@ -1,12 +1,12 @@
 <idea-plugin version="2" url="https://github.com/analytically/innerbuilder">
     <id>InnerBuilder</id>
-    <name>${project.name}</name>
-    <version>${project.version}</version>
+    <name>InnerBuilder</name>
+    <version>1.1.2</version>
 
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
-      10.02.2015 - 1.1.2 - Added more options to use JSR-305 @Nonnull annotations and make all parameter fields final.<br/>
+      24.02.2015 - 1.1.2 - Added more options to use JSR-305 @Nonnull annotations and make all method parameters final.<br/>
       13.06.2014 - 1.1.1 - Bugfix for final fields in copy builder, thanks to neilg.<br/>
       27.02.2014 - 1.1.0 - Added checkboxes to customize the builder (new builder method, copy constructor and 'with' notation).<br/>
       16.02.2014 - 1.0.8 - Don't include private superclass fields and allow fields with no access modifier.<br/>
