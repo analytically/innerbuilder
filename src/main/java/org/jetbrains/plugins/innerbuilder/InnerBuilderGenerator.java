@@ -74,11 +74,6 @@ public class InnerBuilderGenerator implements Runnable {
         }
 
         final Set<InnerBuilderOption> options = currentOptions();
-        final boolean finalSetters = options.contains(InnerBuilderOption.FINAL_SETTERS);
-        final boolean copyConstructor = options.contains(InnerBuilderOption.COPY_CONSTRUCTOR);
-        final boolean withNotation = options.contains(InnerBuilderOption.WITH_NOTATION);
-        final boolean useJsr305 = options.contains(InnerBuilderOption.JSR305_ANNOTATIONS);
-        final boolean finalParameters = options.contains(InnerBuilderOption.FINAL_PARAMETERS);
 
         final PsiClass builderClass = findOrCreateBuilderClass(topLevelClass);
 
@@ -93,7 +88,8 @@ public class InnerBuilderGenerator implements Runnable {
         PsiElement lastAddedField = null;
         for (final PsiFieldMember fieldMember : selectedFields) {
             lastAddedField = findOrCreateField(builderClass, fieldMember, lastAddedField);
-            if (fieldMember.getElement().hasModifierProperty(PsiModifier.FINAL) && !finalSetters) {
+            if (fieldMember.getElement().hasModifierProperty(PsiModifier.FINAL)
+                    && !options.contains(InnerBuilderOption.FINAL_SETTERS)) {
                 finalFields.add(fieldMember);
                 PsiUtil.setModifierProperty((PsiField) lastAddedField, PsiModifier.FINAL, true);
             } else {
