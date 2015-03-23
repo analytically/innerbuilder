@@ -27,54 +27,54 @@ public final class InnerBuilderOptionSelector {
         final List<SelectorOption> options = new ArrayList<SelectorOption>(6);
 
         options.add(
-            SelectorOption.newBuilder()                               //
-            .withCaption("Generate builder methods for final fields") //
-            .withMnemonic('f')                                        //
-            .withOption(InnerBuilderOption.FINAL_SETTERS)             //
+            SelectorOption.newBuilder()
+            .withCaption("Generate builder methods for final fields")
+            .withMnemonic('f')
+            .withOption(InnerBuilderOption.FINAL_SETTERS)
             .build());
 
         options.add(
-            SelectorOption.newBuilder()                         //
-            .withCaption("Generate static newBuilder() method") //
-            .withMnemonic('n')                                  //
-            .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)  //
+            SelectorOption.newBuilder()
+            .withCaption("Generate static newBuilder() method")
+            .withMnemonic('n')
+            .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)
             .build());
 
         options.add(
-            SelectorOption.newBuilder()                       //
-            .withCaption("Generate builder copy constructor") //
-            .withMnemonic('o')                                //
-            .withOption(InnerBuilderOption.COPY_CONSTRUCTOR)  //
+            SelectorOption.newBuilder()
+            .withCaption("Generate builder copy constructor")
+            .withMnemonic('o')
+            .withOption(InnerBuilderOption.COPY_CONSTRUCTOR)
             .build());
 
         options.add(
-            SelectorOption.newBuilder()                                          //
-            .withCaption("Use 'with...' notation")                               //
-            .withMnemonic('w')                                                   //
+            SelectorOption.newBuilder()
+            .withCaption("Use 'with...' notation")
+            .withMnemonic('w')
             .withToolTip(
-                "Generate builder methods that start with 'with', for example: " //
-                    + "builder.withName(String name)")                           //
-            .withOption(InnerBuilderOption.WITH_NOTATION)                        //
+                "Generate builder methods that start with 'with', for example: "
+                    + "builder.withName(String name)")
+            .withOption(InnerBuilderOption.WITH_NOTATION)
             .build());
 
         options.add(
-            SelectorOption.newBuilder()                                                  //
-            .withCaption("JSR-305 @Nonnull w/ Google Guava null check") //
-            .withMnemonic('j')                                                           //
+            SelectorOption.newBuilder()
+            .withCaption("Add JSR-305 @Nonnull annotation")
+            .withMnemonic('j')
             .withToolTip(
                 "Add @Nonnull annotations to generated methods and parameters, for example: "
-                    + "@Nonnull public Builder withName(@Nonnull String name) { ... }") //
-            .withOption(InnerBuilderOption.JSR305_ANNOTATIONS)                          //
+                    + "@Nonnull public Builder withName(@Nonnull String name) { ... }")
+            .withOption(InnerBuilderOption.JSR305_ANNOTATIONS)
             .build());
 
         options.add(
-            SelectorOption.newBuilder()                                     //
-            .withCaption("Make all parameters final")                       //
-            .withMnemonic('p')                                              //
+            SelectorOption.newBuilder()
+            .withCaption("Make all parameters final")
+            .withMnemonic('p')
             .withToolTip(
                 "Add the 'final' modifier to all the method parameters, for example: "
-                    + "public Builder withName(final String name) { ... }") //
-            .withOption(InnerBuilderOption.FINAL_PARAMETERS)                //
+                    + "public Builder withName(final String name) { ... }")
+            .withOption(InnerBuilderOption.FINAL_PARAMETERS)
             .build());
         return options;
     }
