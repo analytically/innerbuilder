@@ -127,7 +127,7 @@ public class InnerBuilderGenerator implements Runnable {
         }
 
         // builder.build() method
-        final PsiMethod buildMethod = generateBuildMethod(topLevelClass, options, nonFinalFields);
+        final PsiMethod buildMethod = generateBuildMethod(topLevelClass, options);
         addMethod(builderClass, lastAddedElement, buildMethod, false);
 
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(file);
@@ -173,7 +173,7 @@ public class InnerBuilderGenerator implements Runnable {
                     copyBuilderMethod);
             copyBuilderBody.add(newBuilderStatement);
 
-            addCopyBody(fields, copyBuilderMethod, "builder.", options);
+            addCopyBody(fields, copyBuilderMethod, "builder.");
         }
 
         return copyBuilderMethod;
@@ -197,31 +197,18 @@ public class InnerBuilderGenerator implements Runnable {
 
         copyConstructor.getParameterList().add(parameter);
 
-        addCopyBody(nonFinalFields, copyConstructor, "this.", options);
-
+        addCopyBody(nonFinalFields, copyConstructor, "this.");
         return copyConstructor;
     }
 
-    private void addCopyBody(final Collection<PsiFieldMember> fields, final PsiMethod method, final String qName,
-            final Set<InnerBuilderOption> options) {
+    private void addCopyBody(final Collection<PsiFieldMember> fields, final PsiMethod method, final String qName) {
         final PsiCodeBlock methodBody = method.getBody();
         if (methodBody == null) {
             return;
         }
 
-        if (options.contains(InnerBuilderOption.JSR305_ANNOTATIONS)) {
-            final String preCondition =
-                "com.google.common.base.Preconditions.checkNotNull(copy, \"copy parameter can't be null\");";
-            final PsiStatement preConditionStatement = psiElementFactory.createStatementFromText(preCondition, method);
-            methodBody.addAfter(preConditionStatement, methodBody.getLBrace());
-        }
-
         for (final PsiFieldMember member : fields) {
             final PsiField field = member.getElement();
-
-// if (field.hasModifierProperty(PsiModifier.FINAL) && !options.contains(InnerBuilderOption.FINAL_SETTERS)) {
-// continue;
-// }
 
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
                         "%s%2$s = copy.%2$s;", qName, field.getName()), method);
@@ -427,8 +414,7 @@ public class InnerBuilderGenerator implements Runnable {
         return constructor;
     }
 
-    private PsiMethod generateBuildMethod(final PsiClass topLevelClass, final Set<InnerBuilderOption> options,
-            final Collection<PsiFieldMember> nonFinalFields) {
+    private PsiMethod generateBuildMethod(final PsiClass topLevelClass, final Set<InnerBuilderOption> options) {
         final PsiType topLevelClassType = psiElementFactory.createType(topLevelClass);
         final PsiMethod buildMethod = psiElementFactory.createMethod("build", topLevelClassType);
 
@@ -441,17 +427,6 @@ public class InnerBuilderGenerator implements Runnable {
 
         final PsiCodeBlock buildMethodBody = buildMethod.getBody();
         if (buildMethodBody != null) {
-            if (useJsr305) {
-                for (final PsiFieldMember member : nonFinalFields) {
-                    final PsiField field = member.getElement();
-                    if (!InnerBuilderUtils.isPrimitive(field)) {
-                        final String statement = String.format(
-                                "Preconditions.checkNotNull(%1$s, \"%1$s can't be null\");", field.getName());
-                        buildMethodBody.add(psiElementFactory.createStatementFromText(statement, buildMethod));
-                    }
-                }
-            }
-
             final PsiStatement returnStatement = psiElementFactory.createStatementFromText(String.format(
                         "return new %s(this);", topLevelClass.getName()), buildMethod);
             buildMethodBody.add(returnStatement);

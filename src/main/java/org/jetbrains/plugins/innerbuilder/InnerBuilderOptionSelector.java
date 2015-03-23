@@ -58,9 +58,9 @@ public final class InnerBuilderOptionSelector {
             .build());
 
         options.add(
-            SelectorOption.newBuilder()                                                 //
-            .withCaption("Use JSR-305 @Nonnull annotations")                            //
-            .withMnemonic('j')                                                          //
+            SelectorOption.newBuilder()                                                  //
+            .withCaption("JSR-305 @Nonnull w/ Google Guava null check") //
+            .withMnemonic('j')                                                           //
             .withToolTip(
                 "Add @Nonnull annotations to generated methods and parameters, for example: "
                     + "@Nonnull public Builder withName(@Nonnull String name) { ... }") //
@@ -70,7 +70,7 @@ public final class InnerBuilderOptionSelector {
         options.add(
             SelectorOption.newBuilder()                                     //
             .withCaption("Make all parameters final")                       //
-            .withMnemonic('j')                                              //
+            .withMnemonic('p')                                              //
             .withToolTip(
                 "Add the 'final' modifier to all the method parameters, for example: "
                     + "public Builder withName(final String name) { ... }") //
@@ -101,7 +101,7 @@ public final class InnerBuilderOptionSelector {
                 true,  // allowMultiSelection
                 project, null, optionCheckBoxes);
 
-        chooser.setTitle("Select fields and options for the Builder");
+        chooser.setTitle("Select Fields and Options for the Builder");
         chooser.selectElements(memberArray);
         if (chooser.showAndGet()) {
             return chooser.getSelectedElements();
