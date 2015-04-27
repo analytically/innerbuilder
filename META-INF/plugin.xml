@@ -1,0 +1,37 @@
+<idea-plugin version="2" url="https://github.com/analytically/innerbuilder">
+    <id>InnerBuilder</id>
+    <name>InnerBuilder</name>
+    <version>1.1.3-SNAPSHOT</version>
+
+    <description><![CDATA[${project.description}]]></description>
+
+    <change-notes><![CDATA[
+      26.04.204  - 1.1.3 - Added Findbugs @NonNull support and javadoc generation.<br/>
+      24.02.2015 - 1.1.2 - Added more options to use JSR-305 @Nonnull annotations and make all method parameters final.<br/>
+      13.06.2014 - 1.1.1 - Bugfix for final fields in copy builder, thanks to neilg.<br/>
+      27.02.2014 - 1.1.0 - Added checkboxes to customize the builder (new builder method, copy constructor and 'with' notation).<br/>
+      16.02.2014 - 1.0.8 - Don't include private superclass fields and allow fields with no access modifier.<br/>
+      01.02.2014 - 1.0.7 - Ignore tinylog and JBoss logging fields.<br/>
+      14.12.2013 - 1.0.6 - Rewrites existing Builder classes, field ordering in chooser is now superclass-first.<br/>
+      06.12.2013 - 1.0.5 - Fixed bug with primitive types.<br/>
+      06.12.2013 - 1.0.4 - Fixed generated field order.<br/>
+      03.12.2013 - 1.0.3 - Now includes parent class fields in the chooser.<br/>
+      29.11.2013 - 1.0.1 - Small fixup release.<br/>
+      22.11.2013 - 1.0.0 - First release, based on an old codebase.<br/>
+      ]]>
+    </change-notes>
+
+    <vendor email="mathias.bogaert@gmail.com" url="https://github.com/analytically">Mathias Bogaert</vendor>
+
+    <!-- Intellij 12+ -->
+    <idea-version since-build="123"/>
+
+    <actions>
+        <action id="InnerBuilder.generate"
+                class="org.jetbrains.plugins.innerbuilder.InnerBuilderAction"
+                text="Builder..." description="${project.description}">
+            <add-to-group group-id="GenerateGroup" anchor="after" relative-to-action="JavaGenerateGroup2"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt B"/>
+        </action>
+    </actions>
+</idea-plugin>
