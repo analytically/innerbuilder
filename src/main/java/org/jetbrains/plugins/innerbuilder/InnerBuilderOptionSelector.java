@@ -1,89 +1,95 @@
 package org.jetbrains.plugins.innerbuilder;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JCheckBox;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.intellij.codeInsight.generation.PsiFieldMember;
-
 import com.intellij.ide.util.MemberChooser;
 import com.intellij.ide.util.PropertiesComponent;
-
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-
 import com.intellij.ui.NonFocusableCheckBox;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class InnerBuilderOptionSelector {
     private static final List<SelectorOption> OPTIONS = createGeneratorOptions();
 
     private static List<SelectorOption> createGeneratorOptions() {
-        final List<SelectorOption> options = new ArrayList<SelectorOption>(6);
+        final List<SelectorOption> options = new ArrayList<>(8);
 
         options.add(
-            SelectorOption.newBuilder()
-            .withCaption("Generate builder methods for final fields")
-            .withMnemonic('f')
-            .withOption(InnerBuilderOption.FINAL_SETTERS)
-            .build());
-
+                SelectorOption.newBuilder()
+                        .withCaption("Generate builder methods for final fields")
+                        .withMnemonic('f')
+                        .withOption(InnerBuilderOption.FINAL_SETTERS)
+                        .build());
         options.add(
-            SelectorOption.newBuilder()
-            .withCaption("Generate static newBuilder() method")
-            .withMnemonic('n')
-            .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)
-            .build());
-
+                SelectorOption.newBuilder()
+                        .withCaption("Generate static newBuilder() method")
+                        .withMnemonic('n')
+                        .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)
+                        .build());
         options.add(
-            SelectorOption.newBuilder()
-            .withCaption("Generate builder copy constructor")
-            .withMnemonic('o')
-            .withOption(InnerBuilderOption.COPY_CONSTRUCTOR)
-            .build());
-
+                SelectorOption.newBuilder()
+                        .withCaption("Generate builder copy constructor")
+                        .withMnemonic('o')
+                        .withOption(InnerBuilderOption.COPY_CONSTRUCTOR)
+                        .build());
         options.add(
-            SelectorOption.newBuilder()
-            .withCaption("Use 'with...' notation")
-            .withMnemonic('w')
-            .withToolTip(
-                "Generate builder methods that start with 'with', for example: "
-                    + "builder.withName(String name)")
-            .withOption(InnerBuilderOption.WITH_NOTATION)
-            .build());
-
+                SelectorOption.newBuilder()
+                        .withCaption("Use 'with...' notation")
+                        .withMnemonic('w')
+                        .withToolTip(
+                                "Generate builder methods that start with 'with', for example: "
+                                        + "builder.withName(String name)")
+                        .withOption(InnerBuilderOption.WITH_NOTATION)
+                        .build());
         options.add(
-            SelectorOption.newBuilder()
-            .withCaption("Add JSR-305 @Nonnull annotation")
-            .withMnemonic('j')
-            .withToolTip(
-                "Add @Nonnull annotations to generated methods and parameters, for example: "
-                    + "@Nonnull public Builder withName(@Nonnull String name) { ... }")
-            .withOption(InnerBuilderOption.JSR305_ANNOTATIONS)
-            .build());
-
+                SelectorOption.newBuilder()
+                        .withCaption("Add JSR-305 @Nonnull annotation")
+                        .withMnemonic('j')
+                        .withToolTip(
+                                "Add @Nonnull annotations to generated methods and parameters, for example: "
+                                        + "@Nonnull public Builder withName(@Nonnull String name) { ... }")
+                        .withOption(InnerBuilderOption.JSR305_ANNOTATIONS)
+                        .build());
         options.add(
-            SelectorOption.newBuilder()
-            .withCaption("Make all parameters final")
-            .withMnemonic('p')
-            .withToolTip(
-                "Add the 'final' modifier to all the method parameters, for example: "
-                    + "public Builder withName(final String name) { ... }")
-            .withOption(InnerBuilderOption.FINAL_PARAMETERS)
-            .build());
+                SelectorOption.newBuilder()
+                        .withCaption("Add Findbugs @NonNull annotation")
+                        .withMnemonic('b')
+                        .withToolTip(
+                                "Add @NonNull annotations to generated methods and parameters, for example: "
+                                        + "@NonNull public Builder withName(@NonNull String name) { ... }")
+                        .withOption(InnerBuilderOption.FINDBUGS_ANNOTATION)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Make all parameters final")
+                        .withMnemonic('p')
+                        .withToolTip(
+                                "Add the 'final' modifier to all the method parameters, for example: "
+                                        + "public Builder withName(final String name) { ... }")
+                        .withOption(InnerBuilderOption.FINAL_PARAMETERS)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Add javadoc")
+                        .withMnemonic('c')
+                        .withToolTip("Add javadoc to generated builder class and methods")
+                        .withOption(InnerBuilderOption.WITH_JAVADOC)
+                        .build());
         return options;
     }
 
-    private InnerBuilderOptionSelector() { }
+    private InnerBuilderOptionSelector() {
+    }
 
     @Nullable
     public static List<PsiFieldMember> selectFieldsAndOptions(final List<PsiFieldMember> members,
-            final Project project) {
+                                                              final Project project) {
         if (members == null || members.isEmpty()) {
             return null;
         }
@@ -122,7 +128,7 @@ public final class InnerBuilderOptionSelector {
     }
 
     private static JCheckBox buildOptionCheckBox(final PropertiesComponent propertiesComponent,
-            final SelectorOption selectorOption) {
+                                                 final SelectorOption selectorOption) {
         final InnerBuilderOption option = selectorOption.getOption();
 
         final JCheckBox optionCheckBox = new NonFocusableCheckBox(selectorOption.getCaption());
@@ -132,11 +138,11 @@ public final class InnerBuilderOptionSelector {
         final String optionProperty = option.getProperty();
         optionCheckBox.setSelected(propertiesComponent.isTrueValue(optionProperty));
         optionCheckBox.addItemListener(new ItemListener() {
-                @Override
-                public void itemStateChanged(final ItemEvent event) {
-                    propertiesComponent.setValue(optionProperty, Boolean.toString(optionCheckBox.isSelected()));
-                }
-            });
+            @Override
+            public void itemStateChanged(final ItemEvent event) {
+                 propertiesComponent.setValue(optionProperty, Boolean.toString(optionCheckBox.isSelected()));
+            }
+        });
         return optionCheckBox;
     }
 
