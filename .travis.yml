@@ -3,7 +3,7 @@ jdk: openjdk7
 before_install:
   - chmod +x prepare-build.sh
   - ./prepare-build.sh
-script: mvn clean package
+script: mvn package
 after_success:
   - cd /tmp
   - git clone https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_PROJECT_NAME} innerbuilder
