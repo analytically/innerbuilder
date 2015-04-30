@@ -1,7 +1,9 @@
 language: java
-sudo: false
 jdk: openjdk7
-script: chmod +x prepare-build.sh && ./prepare-build.sh && mvn clean package
+before_script:
+  - chmod +x prepare-build.sh
+  - ./prepare-build.sh
+script: mvn clean package
 after_success:
   - cd /tmp
   - git clone https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_PROJECT_NAME} innerbuilder

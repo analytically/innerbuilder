@@ -67,18 +67,9 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
-                        .withCaption("Make all parameters final")
-                        .withMnemonic('p')
-                        .withToolTip(
-                                "Add the 'final' modifier to all the method parameters, for example: "
-                                        + "public Builder withName(final String name) { ... }")
-                        .withOption(InnerBuilderOption.FINAL_PARAMETERS)
-                        .build());
-        options.add(
-                SelectorOption.newBuilder()
-                        .withCaption("Add javadoc")
+                        .withCaption("Add Javadoc")
                         .withMnemonic('c')
-                        .withToolTip("Add javadoc to generated builder class and methods")
+                        .withToolTip("Add Javadoc to generated builder class and methods")
                         .withOption(InnerBuilderOption.WITH_JAVADOC)
                         .build());
         return options;
@@ -102,7 +93,7 @@ public final class InnerBuilderOptionSelector {
 
         final PsiFieldMember[] memberArray = members.toArray(new PsiFieldMember[members.size()]);
 
-        final MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(memberArray, //
+        final MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(memberArray,
                 false, // allowEmptySelection
                 true,  // allowMultiSelection
                 project, null, optionCheckBoxes);
@@ -140,10 +131,10 @@ public final class InnerBuilderOptionSelector {
         optionCheckBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(final ItemEvent event) {
-                 propertiesComponent.setValue(optionProperty, Boolean.toString(optionCheckBox.isSelected()));
+                propertiesComponent.setValue(optionProperty, Boolean.toString(optionCheckBox.isSelected()));
             }
         });
         return optionCheckBox;
     }
-
 }
+

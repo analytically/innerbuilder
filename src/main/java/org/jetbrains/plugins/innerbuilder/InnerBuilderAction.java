@@ -25,8 +25,7 @@ public class InnerBuilderAction extends BaseCodeInsightAction {
     }
 
     @Override
-    protected boolean isValidForFile(@NotNull final Project project, @NotNull final Editor editor,
-            @NotNull final PsiFile file) {
+    protected boolean isValidForFile(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         return handler.isValidFor(editor, file);
     }
 }

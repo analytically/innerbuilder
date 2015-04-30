@@ -30,11 +30,10 @@ public final class InnerBuilderUtils {
     /**
      * Does the string have a lowercase character?
      *
-     * @param   str  the string to test.
-     *
-     * @return  true if the string has a lowercase character, false if not.
+     * @param str the string to test.
+     * @return true if the string has a lowercase character, false if not.
      */
-    public static boolean hasLowerCaseChar(final String str) {
+    public static boolean hasLowerCaseChar(String str) {
         for (int i = 0; i < str.length(); i++) {
             if (Character.isLowerCase(str.charAt(i))) {
                 return true;
@@ -44,15 +43,15 @@ public final class InnerBuilderUtils {
         return false;
     }
 
-    public static String capitalize(final String str) {
+    public static String capitalize(String str) {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 
-    static String stripJavaLang(final String typeString) {
+    static String stripJavaLang(String typeString) {
         return typeString.startsWith(JAVA_DOT_LANG) ? typeString.substring(JAVA_DOT_LANG.length()) : typeString;
     }
 
-    static boolean areParameterListsEqual(final PsiParameterList paramList1, final PsiParameterList paramList2) {
+    static boolean areParameterListsEqual(PsiParameterList paramList1, PsiParameterList paramList2) {
         if (paramList1.getParametersCount() != paramList2.getParametersCount()) {
             return false;
         }
@@ -71,7 +70,7 @@ public final class InnerBuilderUtils {
         return true;
     }
 
-    static boolean areTypesPresentableEqual(final PsiType type1, final PsiType type2) {
+    static boolean areTypesPresentableEqual(PsiType type1, PsiType type2) {
         if (type1 != null && type2 != null) {
             final String type1Canonical = stripJavaLang(type1.getPresentableText());
             final String type2Canonical = stripJavaLang(type2.getPresentableText());
@@ -82,7 +81,7 @@ public final class InnerBuilderUtils {
     }
 
     @Nullable
-    public static PsiClass getTopLevelClass(final Project project, final PsiFile file, final Editor editor) {
+    public static PsiClass getTopLevelClass(Project project, PsiFile file, Editor editor) {
         final int offset = editor.getCaretModel().getOffset();
         final PsiElement element = file.findElementAt(offset);
         if (element == null) {
@@ -92,16 +91,11 @@ public final class InnerBuilderUtils {
         return PsiUtil.getTopLevelClass(element);
     }
 
-    public static boolean isPrimitive(final PsiFieldMember psiFieldMember) {
-        return isPrimitive(psiFieldMember.getElement());
-    }
-
-    public static boolean isPrimitive(final PsiField psiField) {
+    public static boolean isPrimitive(PsiField psiField) {
         return (psiField.getType() instanceof PsiPrimitiveType);
     }
 
-    static PsiStatement createReturnThis(@NotNull final PsiElementFactory psiElementFactory,
-            @Nullable final PsiElement context) {
+    static PsiStatement createReturnThis(@NotNull PsiElementFactory psiElementFactory, @Nullable PsiElement context) {
         return psiElementFactory.createStatementFromText("return this;", context);
     }
 }
