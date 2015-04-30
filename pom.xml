@@ -11,11 +11,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ij.plugin>true</ij.plugin>
     </properties>
 
     <build>
-        <finalName>innerbuilder-${version}</finalName>
+        <finalName>innerbuilder</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -24,39 +23,12 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>com.guidewire.build</groupId>
-                <artifactId>ijplugin-maven-plugin</artifactId>
-                <version>0.2.6-SNAPSHOT</version>
-                <configuration>
-                    <manifestLocation>src/main/resources/META-INF/plugin.xml</manifestLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <id>download-intellij-ce</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>http://download.jetbrains.com/idea/ideaIC-14.0.2.tar.gz</url>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/dependency/IntelliJ-IDEA-CE</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
                     <compilerArguments>
-                        <extdirs>${project.build.directory}/dependency/IntelliJ-IDEA-CE/idea-IC-139.659.2/lib/</extdirs>
+                        <extdirs>${project.build.directory}/dependency/intellij-idea/lib/</extdirs>
                     </compilerArguments>
                     <source>1.6</source>
                     <target>1.6</target>

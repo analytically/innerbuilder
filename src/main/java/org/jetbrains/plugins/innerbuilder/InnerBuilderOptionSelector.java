@@ -18,7 +18,7 @@ public final class InnerBuilderOptionSelector {
     private static final List<SelectorOption> OPTIONS = createGeneratorOptions();
 
     private static List<SelectorOption> createGeneratorOptions() {
-        final List<SelectorOption> options = new ArrayList<>(8);
+        final List<SelectorOption> options = new ArrayList<SelectorOption>(8);
 
         options.add(
                 SelectorOption.newBuilder()
