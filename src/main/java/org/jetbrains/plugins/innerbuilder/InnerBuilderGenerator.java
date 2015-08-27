@@ -161,7 +161,7 @@ public class InnerBuilderGenerator implements Runnable {
                 copyBuilderBody.add(psiElementFactory.createStatementFromText("return builder;", copyBuilderMethod));
             } else {
                 final PsiStatement newBuilderStatement = psiElementFactory.createStatementFromText(String.format(
-                                "return new %s(%s);", builderType.getPresentableText(),
+                                "\nreturn new %s(%s);\n", builderType.getPresentableText(),
                                 copyBuilderParameters.toString()),
                         copyBuilderMethod);
                 copyBuilderBody.add(newBuilderStatement);
@@ -277,7 +277,7 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiCodeBlock newBuilderMethodBody = newBuilderMethod.getBody();
         if (newBuilderMethodBody != null) {
             final PsiStatement newStatement = psiElementFactory.createStatementFromText(String.format(
-                            "return new %s(%s);", builderType.getPresentableText(), fieldList.toString()),
+                            "\nreturn new %s(%s);\n", builderType.getPresentableText(), fieldList.toString()),
                     newBuilderMethod);
             newBuilderMethodBody.add(newStatement);
         }
@@ -384,7 +384,7 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiCodeBlock buildMethodBody = buildMethod.getBody();
         if (buildMethodBody != null) {
             final PsiStatement returnStatement = psiElementFactory.createStatementFromText(String.format(
-                    "return new %s(this);", topLevelClass.getName()), buildMethod);
+                    "\nreturn new %s(this);\n", topLevelClass.getName()), buildMethod);
             buildMethodBody.add(returnStatement);
         }
         setBuildMethodComment(buildMethod, topLevelClass);
