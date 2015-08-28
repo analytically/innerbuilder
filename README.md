@@ -3,58 +3,56 @@ innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.sv
 
 [IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
 which generates an inner builder class as described in Effective Java. Works with IntelliJ IDEA 12.x, 13.x and 14.x.
-
-Follow [@analytically](http://twitter.com/analytically) for updates. NEW in 1.1.0: generate builder methods for final fields,
-`newBuilder()` method instead of constructor, generating the copy constructor can now be turned off, `with...` notation.
+Follow [@analytically](http://twitter.com/analytically) for updates.
 
 ![screenshot](screenshot.png)
 
 ```java
 public class YourTypicalBean {
-  private final String foo;
-  private String bar, baz;
-  private int qux;
-
-  private YourTypicalBean(Builder builder) {
-    foo = builder.foo;
-    bar = builder.bar;
-    baz = builder.baz;
-    setQux(builder.qux);
-  }
-
-  public void setQux(int qux) {
-    this.qux = qux;
-  }
-
-  public static final class Builder {
     private final String foo;
-    private String bar;
-    private String baz;
+    private String bar, baz;
     private int qux;
 
-    public Builder(String foo) {
-      this.foo = foo;
+    private YourTypicalBean(Builder builder) {
+        foo = builder.foo;
+        bar = builder.bar;
+        baz = builder.baz;
+        setQux(builder.qux);
     }
 
-    public Builder bar(String bar) {
-      this.bar = bar;
-      return this;
+    public void setQux(int qux) {
+        this.qux = qux;
     }
 
-    public Builder baz(String baz) {
-      this.baz = baz;
-      return this;
-    }
+    public static final class Builder {
+        private final String foo;
+        private String bar;
+        private String baz;
+        private int qux;
 
-    public Builder qux(int qux) {
-      this.qux = qux;
-      return this;
-    }
+        public Builder(String foo) {
+            this.foo = foo;
+        }
 
-    public YourTypicalBean build() {
-      return new YourTypicalBean(this);
+        public Builder bar(String val) {
+            bar = val;
+            return this;
+        }
+
+        public Builder baz(String val) {
+            baz = val;
+            return this;
+        }
+
+        public Builder qux(int val) {
+            qux = val;
+            return this;
+        }
+
+        public YourTypicalBean build() {
+            return new YourTypicalBean(this);
+        }
     }
-  }
 }
 ```
 
