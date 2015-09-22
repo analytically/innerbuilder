@@ -182,11 +182,13 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiModifierList parameterModifierList = constructorParameter.getModifierList();
 
         if (parameterModifierList != null) {
-            if (options.contains(InnerBuilderOption.JSR305_ANNOTATIONS))
+            if (options.contains(InnerBuilderOption.JSR305_ANNOTATIONS)) {
                 parameterModifierList.addAnnotation(JSR305_NONNULL);
-            if (options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION))
+            }
+            if (options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION)) {
                 parameterModifierList.addAnnotation(FINDBUGS_NONNULL);
             }
+        }
         copyConstructor.getParameterList().add(constructorParameter);
         addCopyBody(nonFinalFields, copyConstructor, "this.");
         return copyConstructor;
@@ -228,8 +230,8 @@ public class InnerBuilderGenerator implements Runnable {
                 final boolean useFindbugs = options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION);
 
                 if (!InnerBuilderUtils.isPrimitive(field) && parameterModifierList != null) {
-                    if (useJsr305) parameterModifierList.addAnnotation(JSR305_NONNULL);
-                    if (useFindbugs) parameterModifierList.addAnnotation(FINDBUGS_NONNULL);
+                    if (useJsr305) { parameterModifierList.addAnnotation(JSR305_NONNULL); }
+                    if (useFindbugs) { parameterModifierList.addAnnotation(FINDBUGS_NONNULL); }
                 }
 
                 builderConstructor.getParameterList().add(parameter);
@@ -241,7 +243,6 @@ public class InnerBuilderGenerator implements Runnable {
 
         return builderConstructor;
     }
-
 
     private PsiMethod generateNewBuilderMethod(final PsiType builderType, final Collection<PsiFieldMember> finalFields,
             final Set<InnerBuilderOption> options) {
@@ -261,12 +262,14 @@ public class InnerBuilderGenerator implements Runnable {
                 if (parameterModifierList != null) {
 
                     if (!InnerBuilderUtils.isPrimitive(field)) {
-                        if (options.contains(InnerBuilderOption.JSR305_ANNOTATIONS))
+                        if (options.contains(InnerBuilderOption.JSR305_ANNOTATIONS)) {
                             parameterModifierList.addAnnotation(JSR305_NONNULL);
-                        if (options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION))
+                        }
+                        if (options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION)) {
                             parameterModifierList.addAnnotation(FINDBUGS_NONNULL);
                         }
                     }
+                }
                 newBuilderMethod.getParameterList().add(parameter);
                 if (fieldList.length() > 0) {
                     fieldList.append(", ");
@@ -311,24 +314,30 @@ public class InnerBuilderGenerator implements Runnable {
         final boolean useJsr305 = options.contains(InnerBuilderOption.JSR305_ANNOTATIONS);
         final boolean useFindbugs = options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION);
 
-        if (useJsr305) setterMethod.getModifierList().addAnnotation(JSR305_NONNULL);
-        if (useFindbugs) setterMethod.getModifierList().addAnnotation(FINDBUGS_NONNULL);
+        if (useJsr305) { setterMethod.getModifierList().addAnnotation(JSR305_NONNULL); }
+        if (useFindbugs) { setterMethod.getModifierList().addAnnotation(FINDBUGS_NONNULL); }
 
         setterMethod.getModifierList().setModifierProperty(PsiModifier.PUBLIC, true);
         final PsiParameter setterParameter = psiElementFactory.createParameter(parameterName, fieldType);
 
-        if (!(fieldType instanceof PsiPrimitiveType)) {
         final PsiModifierList setterParameterModifierList = setterParameter.getModifierList();
         if (setterParameterModifierList != null) {
-                if (useJsr305) setterParameterModifierList.addAnnotation(JSR305_NONNULL);
-                if (useFindbugs) setterParameterModifierList.addAnnotation(FINDBUGS_NONNULL);
+            // Mark parameters as final
+            if (options.contains(InnerBuilderOption.FINAL_PARAMETERS)) {
+                setterParameterModifierList.setModifierProperty(PsiModifier.FINAL, true);
+            }
+
+            if (!(fieldType instanceof PsiPrimitiveType)) {
+                if (useJsr305) { setterParameterModifierList.addAnnotation(JSR305_NONNULL); }
+                if (useFindbugs) { setterParameterModifierList.addAnnotation(FINDBUGS_NONNULL); }
             }
         }
         setterMethod.getParameterList().add(setterParameter);
         final PsiCodeBlock setterMethodBody = setterMethod.getBody();
         if (setterMethodBody != null) {
+            final String prefix = options.contains(InnerBuilderOption.THIS_KEYWORD) ? "this." : "";
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                    "%s = %s;", fieldName, parameterName), setterMethod);
+                    "%s%s = %s;", prefix, fieldName, parameterName), setterMethod);
             setterMethodBody.add(assignStatement);
             setterMethodBody.add(InnerBuilderUtils.createReturnThis(psiElementFactory, setterMethod));
         }
@@ -380,10 +389,8 @@ public class InnerBuilderGenerator implements Runnable {
 
         final boolean useJsr305 = options.contains(InnerBuilderOption.JSR305_ANNOTATIONS);
         final boolean useFindbugs = options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION);
-        if (useJsr305)
-            buildMethod.getModifierList().addAnnotation(JSR305_NONNULL);
-        if (useFindbugs)
-            buildMethod.getModifierList().addAnnotation(FINDBUGS_NONNULL);
+        if (useJsr305) { buildMethod.getModifierList().addAnnotation(JSR305_NONNULL); }
+        if (useFindbugs) { buildMethod.getModifierList().addAnnotation(FINDBUGS_NONNULL); }
 
         buildMethod.getModifierList().setModifierProperty(PsiModifier.PUBLIC, true);
 

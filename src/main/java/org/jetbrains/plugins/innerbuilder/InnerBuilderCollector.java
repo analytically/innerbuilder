@@ -25,6 +25,8 @@ import com.intellij.psi.util.TypeConversionUtil;
 public final class InnerBuilderCollector {
     private InnerBuilderCollector() { }
 
+
+
     @Nullable
     public static List<PsiFieldMember> collectFields(final PsiFile file, final Editor editor) {
         final int offset = editor.getCaretModel().getOffset();
