@@ -8,11 +8,12 @@ public enum InnerBuilderOption {
     WITH_NOTATION("withNotation"),
     JSR305_ANNOTATIONS("useJSR305Annotations"),
     FINDBUGS_ANNOTATION("useFindbugsAnnotation"),
-    WITH_JAVADOC("withJavadoc");
+    WITH_JAVADOC("withJavadoc"),
+    USE_VAL("useVal");
 
     private final String property;
 
-    private InnerBuilderOption(final String property) {
+    InnerBuilderOption(final String property) {
         this.property = String.format("GenerateInnerBuilder.%s", property);
     }
 

@@ -72,6 +72,14 @@ public final class InnerBuilderOptionSelector {
                         .withToolTip("Add Javadoc to generated builder class and methods")
                         .withOption(InnerBuilderOption.WITH_JAVADOC)
                         .build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Use 'val' as parameter name")
+                        .withMnemonic('o')
+                        .withToolTip("Parameters will default to the name 'val', unless the field is already named "
+                                + "'val', in which case 'value' will be used.")
+                        .withOption(InnerBuilderOption.FINAL_PARAMETERS)
+                        .build());
         return options;
     }
 
@@ -80,7 +88,7 @@ public final class InnerBuilderOptionSelector {
 
     @Nullable
     public static List<PsiFieldMember> selectFieldsAndOptions(final List<PsiFieldMember> members,
-                                                              final Project project) {
+            final Project project) {
         if (members == null || members.isEmpty()) {
             return null;
         }
@@ -119,7 +127,7 @@ public final class InnerBuilderOptionSelector {
     }
 
     private static JCheckBox buildOptionCheckBox(final PropertiesComponent propertiesComponent,
-                                                 final SelectorOption selectorOption) {
+            final SelectorOption selectorOption) {
         final InnerBuilderOption option = selectorOption.getOption();
 
         final JCheckBox optionCheckBox = new NonFocusableCheckBox(selectorOption.getCaption());
