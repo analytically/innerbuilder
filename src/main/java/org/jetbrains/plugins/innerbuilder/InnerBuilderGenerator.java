@@ -62,7 +62,7 @@ public class InnerBuilderGenerator implements Runnable {
         final Set<InnerBuilderOption> options = currentOptions();
         final PsiClass builderClass = findOrCreateBuilderClass(topLevelClass);
         final PsiType builderType = psiElementFactory.createTypeFromText(BUILDER_CLASS_NAME, null);
-        final PsiMethod constructor = generateConstructor(topLevelClass, builderType);
+        final PsiMethod constructor = generateConstructor(topLevelClass, builderType, options);
 
         addMethod(topLevelClass, null, constructor, true);
         final Collection<PsiFieldMember> finalFields = new ArrayList<PsiFieldMember>();
@@ -188,6 +188,9 @@ public class InnerBuilderGenerator implements Runnable {
             if (options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION)) {
                 parameterModifierList.addAnnotation(FINDBUGS_NONNULL);
             }
+            if (options.contains(InnerBuilderOption.FINAL_PARAMETERS)) {
+                parameterModifierList.setModifierProperty(PsiModifier.FINAL, true);
+            }
         }
         copyConstructor.getParameterList().add(constructorParameter);
         addCopyBody(nonFinalFields, copyConstructor, "this.");
@@ -229,9 +232,14 @@ public class InnerBuilderGenerator implements Runnable {
                 final boolean useJsr305 = options.contains(InnerBuilderOption.JSR305_ANNOTATIONS);
                 final boolean useFindbugs = options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION);
 
-                if (!InnerBuilderUtils.isPrimitive(field) && parameterModifierList != null) {
-                    if (useJsr305) { parameterModifierList.addAnnotation(JSR305_NONNULL); }
-                    if (useFindbugs) { parameterModifierList.addAnnotation(FINDBUGS_NONNULL); }
+                if (parameterModifierList != null) {
+                    if (!InnerBuilderUtils.isPrimitive(field)) {
+                        if (useJsr305) { parameterModifierList.addAnnotation(JSR305_NONNULL); }
+                        if (useFindbugs) { parameterModifierList.addAnnotation(FINDBUGS_NONNULL); }
+                    }
+                    if (options.contains(InnerBuilderOption.FINAL_PARAMETERS)) {
+                        parameterModifierList.setModifierProperty(PsiModifier.FINAL, true);
+                    }
                 }
 
                 builderConstructor.getParameterList().add(parameter);
@@ -297,6 +305,8 @@ public class InnerBuilderGenerator implements Runnable {
         final String methodName;
         if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
             methodName = String.format("with%s", InnerBuilderUtils.capitalize(fieldName));
+        } else if (options.contains(InnerBuilderOption.SET_NOTATION)) {
+            methodName = String.format("set%s", InnerBuilderUtils.capitalize(fieldName));
         } else {
             methodName = fieldName;
         }
@@ -346,11 +356,18 @@ public class InnerBuilderGenerator implements Runnable {
     }
 
 
-    private PsiMethod generateConstructor(final PsiClass topLevelClass, final PsiType builderType) {
+    private PsiMethod generateConstructor(final PsiClass topLevelClass, final PsiType builderType,
+            final Set<InnerBuilderOption> options) {
         final PsiMethod constructor = psiElementFactory.createConstructor(topLevelClass.getName());
         constructor.getModifierList().setModifierProperty(PsiModifier.PRIVATE, true);
 
         final PsiParameter builderParameter = psiElementFactory.createParameter("builder", builderType);
+        if (options.contains(InnerBuilderOption.FINAL_PARAMETERS)) {
+            final PsiModifierList paramModifierList = builderParameter.getModifierList();
+            if (paramModifierList != null) {
+                paramModifierList.setModifierProperty(PsiModifier.FINAL, true);
+            }
+        }
         constructor.getParameterList().add(builderParameter);
 
         final PsiCodeBlock constructorBody = constructor.getBody();
@@ -370,7 +387,8 @@ public class InnerBuilderGenerator implements Runnable {
 
                 final String assignText;
                 if (setter == null || isFinal) {
-                    assignText = String.format("%1$s = builder.%1$s;", fieldName);
+                    final String prefix = options.contains(InnerBuilderOption.THIS_KEYWORD) ? "this." : "";
+                    assignText = String.format("%1$s%2$s = builder.%2$s;", prefix, fieldName);
                 } else {
                     assignText = String.format("%s(builder.%s);", setter.getName(), fieldName);
                 }
