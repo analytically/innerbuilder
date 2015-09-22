@@ -11,6 +11,7 @@ public enum InnerBuilderOption {
     FINDBUGS_ANNOTATION("useFindbugsAnnotation"),
     WITH_JAVADOC("withJavadoc"),
     THIS_KEYWORD("useThisKeyword"),
+    OPTIONAL_OVERLOADS("optionalOverloads"),
     FINAL_PARAMETERS("finalParameters"),
     USE_VAL("useVal");
 

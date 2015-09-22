@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.util.PropertyUtil;
 import com.intellij.psi.util.PsiUtil;
@@ -106,6 +107,20 @@ public class InnerBuilderGenerator implements Runnable {
         for (final PsiFieldMember member : nonFinalFields) {
             final PsiMethod setterMethod = generateBuilderSetter(builderType, member, options);
             lastAddedElement = addMethod(builderClass, lastAddedElement, setterMethod, false);
+
+            if (options.contains(InnerBuilderOption.OPTIONAL_OVERLOADS)) {
+                // 'Optional' overload builder setters
+                final PsiType fieldType = member.getElement().getType();
+                if (fieldType instanceof PsiClassReferenceType) {
+                    final PsiClassReferenceType refType = (PsiClassReferenceType) fieldType;
+                    if (refType.getCanonicalText().startsWith("java.util.Optional")) {
+                        final PsiMethod optionalOverloadSetterMethod =
+                                generateBuilderOptionalOverloadSetter(builderType, member, options);
+                        lastAddedElement =
+                                addMethod(builderClass, lastAddedElement, optionalOverloadSetterMethod, false);
+                    }
+                }
+            }
         }
 
         // builder.build() method
@@ -355,6 +370,61 @@ public class InnerBuilderGenerator implements Runnable {
         return setterMethod;
     }
 
+    private PsiMethod generateBuilderOptionalOverloadSetter(final PsiType builderType, final PsiFieldMember member,
+            final Set<InnerBuilderOption> options) {
+        final PsiField field = member.getElement();
+        final PsiClassReferenceType refType = (PsiClassReferenceType) field.getType();
+        final PsiType fieldType = refType.getParameters()[0];
+        final String fieldName = field.getName();
+
+        final String methodName;
+        if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
+            methodName = String.format("with%s", InnerBuilderUtils.capitalize(fieldName));
+        } else if (options.contains(InnerBuilderOption.SET_NOTATION)) {
+            methodName = String.format("set%s", InnerBuilderUtils.capitalize(fieldName));
+        } else {
+            methodName = fieldName;
+        }
+
+        final String parameterName;
+        if (options.contains(InnerBuilderOption.USE_VAL)) {
+            parameterName = !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
+                    BUILDER_SETTER_DEFAULT_PARAMETER_NAME :
+                    BUILDER_SETTER_ALTERNATIVE_PARAMETER_NAME;
+        } else {
+            parameterName = fieldName;
+        }
+
+        final PsiMethod setterMethod = psiElementFactory.createMethod(methodName, builderType);
+        final boolean useJsr305 = options.contains(InnerBuilderOption.JSR305_ANNOTATIONS);
+        final boolean useFindbugs = options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION);
+
+        if (useJsr305) { setterMethod.getModifierList().addAnnotation(JSR305_NONNULL); }
+        if (useFindbugs) { setterMethod.getModifierList().addAnnotation(FINDBUGS_NONNULL); }
+
+        setterMethod.getModifierList().setModifierProperty(PsiModifier.PUBLIC, true);
+        final PsiParameter setterParameter = psiElementFactory.createParameter(parameterName, fieldType);
+        final PsiModifierList setterParameterModifierList = setterParameter.getModifierList();
+        if (setterParameterModifierList != null) {
+            // Mark parameters as final
+            if (options.contains(InnerBuilderOption.FINAL_PARAMETERS)) {
+                setterParameterModifierList.setModifierProperty(PsiModifier.FINAL, true);
+            }
+
+            if (useJsr305) { setterParameterModifierList.addAnnotation(JSR305_NONNULL); }
+            if (useFindbugs) { setterParameterModifierList.addAnnotation(FINDBUGS_NONNULL); }
+        }
+        setterMethod.getParameterList().add(setterParameter);
+        final PsiCodeBlock setterMethodBody = setterMethod.getBody();
+        if (setterMethodBody != null) {
+            final PsiStatement returnStatement = psiElementFactory.createStatementFromText(
+                    String.format("return %s(Optional.ofNullable(%s));", setterMethod.getName(), parameterName),
+                    setterMethod);
+            setterMethodBody.add(returnStatement);
+        }
+        setSetterComment(setterMethod, fieldName, parameterName);
+        return setterMethod;
+    }
 
     private PsiMethod generateConstructor(final PsiClass topLevelClass, final PsiType builderType,
             final Set<InnerBuilderOption> options) {

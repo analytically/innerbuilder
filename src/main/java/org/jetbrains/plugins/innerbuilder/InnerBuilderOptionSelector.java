@@ -89,6 +89,14 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
+                        .withCaption("Generate Optional overloads (JDK 8)")
+                        .withMnemonic('o')
+                        .withToolTip("Generates overloads for Optional fields that take the parameter type in "
+                                + "addition to Optional<Type>")
+                        .withOption(InnerBuilderOption.OPTIONAL_OVERLOADS)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
                         .withCaption("Use 'final' modifier for parameters")
                         .withMnemonic('o')
                         .withToolTip("Marks all constructor and setter parameters as 'final'")
