@@ -74,41 +74,11 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
-                        .withCaption("Use 'set' notation")
-                        .withMnemonic('s')
-                        .withToolTip("Generate builder methods that start with 'set', for example: "
-                                + "builder.setName(String name)")
-                        .withOption(InnerBuilderOption.SET_NOTATION)
-                        .build());
-        options.add(
-                SelectorOption.newBuilder()
-                        .withCaption("Use 'this' keyword")
-                        .withMnemonic('t')
-                        .withToolTip("Appends the 'this' keyword to all builder methods")
-                        .withOption(InnerBuilderOption.THIS_KEYWORD)
-                        .build());
-        options.add(
-                SelectorOption.newBuilder()
                         .withCaption("Generate Optional overloads (JDK 8)")
                         .withMnemonic('o')
                         .withToolTip("Generates overloads for Optional fields that take the parameter type in "
                                 + "addition to Optional<Type>")
                         .withOption(InnerBuilderOption.OPTIONAL_OVERLOADS)
-                        .build());
-        options.add(
-                SelectorOption.newBuilder()
-                        .withCaption("Use 'final' modifier for parameters")
-                        .withMnemonic('o')
-                        .withToolTip("Marks all constructor and setter parameters as 'final'")
-                        .withOption(InnerBuilderOption.FINAL_PARAMETERS)
-                        .build());
-        options.add(
-                SelectorOption.newBuilder()
-                        .withCaption("Use 'val' as parameter name")
-                        .withMnemonic('o')
-                        .withToolTip("Parameters will default to the name 'val', unless the field is already named "
-                                + "'val', in which case 'value' will be used.")
-                        .withOption(InnerBuilderOption.FINAL_PARAMETERS)
                         .build());
         return options;
     }
