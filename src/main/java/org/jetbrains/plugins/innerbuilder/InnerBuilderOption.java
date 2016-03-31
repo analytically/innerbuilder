@@ -6,6 +6,7 @@ public enum InnerBuilderOption {
     NEW_BUILDER_METHOD("newBuilderMethod"),
     COPY_CONSTRUCTOR("copyConstructor"),
     WITH_NOTATION("withNotation"),
+    FIELD_NAMES("fieldNames"),
     JSR305_ANNOTATIONS("useJSR305Annotations"),
     FINDBUGS_ANNOTATION("useFindbugsAnnotation"),
     WITH_JAVADOC("withJavadoc");
