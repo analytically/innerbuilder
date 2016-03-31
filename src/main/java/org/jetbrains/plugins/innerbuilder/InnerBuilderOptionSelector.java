@@ -49,6 +49,15 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
+                        .withCaption("Use field names in setter")
+                        .withMnemonic('s')
+                        .withToolTip(
+                                "Generate builder methods that has the same parameter names in setter methods as field names, for example: "
+                                        + "builder.withName(String fieldName)")
+                        .withOption(InnerBuilderOption.FIELD_NAMES)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
                         .withCaption("Add JSR-305 @Nonnull annotation")
                         .withMnemonic('j')
                         .withToolTip(
