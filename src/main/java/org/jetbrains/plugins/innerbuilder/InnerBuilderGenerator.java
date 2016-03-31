@@ -298,7 +298,9 @@ public class InnerBuilderGenerator implements Runnable {
             methodName = fieldName;
         }
 
-        final String parameterName = !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
+        final String parameterName = options.contains(InnerBuilderOption.FIELD_NAMES) ? 
+                fieldNames :
+                !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
                 BUILDER_SETTER_DEFAULT_PARAMETER_NAME :
                 BUILDER_SETTER_ALTERNATIVE_PARAMETER_NAME;
         final PsiMethod setterMethod = psiElementFactory.createMethod(methodName, builderType);
