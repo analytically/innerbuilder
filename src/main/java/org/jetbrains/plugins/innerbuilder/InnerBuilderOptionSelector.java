@@ -72,6 +72,17 @@ public final class InnerBuilderOptionSelector {
                         .withToolTip("Add Javadoc to generated builder class and methods")
                         .withOption(InnerBuilderOption.WITH_JAVADOC)
                         .build());
+
+	options.add(
+		SelectorOption.newBuilder()
+			.withCaption("Use field names in setter")
+			.withMnemonic('s')
+			.withToolTip(
+				"Generate builder methods that has the same parameter names in setter methods as field names, for example: "
+				+ "builder.withName(String fieldName)")
+			.withOption(InnerBuilderOption.FIELD_NAMES)
+			.build());
+
         return options;
     }
 
