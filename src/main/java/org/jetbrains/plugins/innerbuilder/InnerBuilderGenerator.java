@@ -9,6 +9,8 @@ import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.javadoc.PsiDocComment;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PropertyUtil;
 import com.intellij.psi.util.PsiUtil;
 import org.jetbrains.annotations.NonNls;
@@ -31,6 +33,14 @@ public class InnerBuilderGenerator implements Runnable {
     private static final String JSR305_NONNULL = "javax.annotation.Nonnull";
     @NonNls
     private static final String FINDBUGS_NONNULL = "edu.umd.cs.findbugs.annotations.NonNull";
+    @NonNls
+    private static final String JACKSON_JSON_IGNORE = "com.fasterxml.jackson.annotation.JsonIgnore";
+    @NonNls
+    private static final String JACKSON_JSON_SETTER = "com.fasterxml.jackson.annotation.JsonSetter";
+    @NonNls
+    private static final String JACKSON_JSON_POJO_BUILDER = "com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder";
+    @NonNls
+    private static final String JACKSON_JSON_DESERIALIZE = "com.fasterxml.jackson.databind.annotation.JsonDeserialize";
 
     private final Project project;
     private final PsiFile file;
@@ -100,10 +110,38 @@ public class InnerBuilderGenerator implements Runnable {
                 addMethod(builderClass, null, copyConstructorBuilderMethod, true);
             }
         }
+        if (currentOptions().contains(InnerBuilderOption.JACKSON_ANNOTATIONS)) {
+            String  prefix;
+            if (currentOptions().contains(InnerBuilderOption.WITH_NOTATION)) {
+                prefix = "with";
+            } else {
+                prefix = "";
+            }
+            PsiAnnotation pojoBuilderAnnotation = builderClass.getModifierList().findAnnotation(JACKSON_JSON_POJO_BUILDER);
+            if (pojoBuilderAnnotation == null) {
+                pojoBuilderAnnotation = builderClass.getModifierList().addAnnotation(JACKSON_JSON_POJO_BUILDER);
+            }
+            PsiAnnotation jsonDeserializeAnnotation = topLevelClass.getModifierList().findAnnotation(JACKSON_JSON_DESERIALIZE);;
+            if (jsonDeserializeAnnotation == null) {
+                jsonDeserializeAnnotation = topLevelClass.getModifierList().addAnnotation(JACKSON_JSON_DESERIALIZE);
+            }
 
-        // builder methods
+            pojoBuilderAnnotation.setDeclaredAttributeValue("withPrefix",
+                    psiElementFactory.createExpressionFromText("\"" + prefix + "\"", null));
+            jsonDeserializeAnnotation.setDeclaredAttributeValue("builder",
+                    psiElementFactory.createExpressionFromText(topLevelClass.getName() + "." +builderClass.getName()+".class", null));
+        }
+
+            // builder methods
+        PsiType arrayList = PsiType.getTypeByName(CommonClassNames.JAVA_UTIL_ARRAY_LIST, project, GlobalSearchScope.allScope(project));
+        PsiType hashSet = PsiType.getTypeByName(CommonClassNames.JAVA_UTIL_HASH_SET, project, GlobalSearchScope.allScope(project));
         PsiElement lastAddedElement = null;
         for (final PsiFieldMember member : nonFinalFields) {
+            if (currentOptions().contains(InnerBuilderOption.VARARGS_OVERLOADS) && member.getElement().getType().isAssignableFrom(arrayList)
+                    || member.getElement().getType().isAssignableFrom(hashSet)) {
+                PsiMethod varargsMethod = varargsMethod(builderType, member, options);
+                lastAddedElement = addMethod(builderClass, lastAddedElement, varargsMethod, false);
+            }
             final PsiMethod setterMethod = generateBuilderSetter(builderType, member, options);
             lastAddedElement = addMethod(builderClass, lastAddedElement, setterMethod, false);
         }
@@ -114,6 +152,52 @@ public class InnerBuilderGenerator implements Runnable {
 
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(file);
         CodeStyleManager.getInstance(project).reformat(builderClass);
+    }
+
+    private PsiMethod varargsMethod(PsiType builderType, PsiFieldMember member, Set<InnerBuilderOption> options) {
+        final PsiField field = member.getElement();
+        final PsiType fieldType = PsiUtil.extractIterableTypeParameter(field.getType(), false);
+        final String fieldName = field.getName();
+
+        final String methodName;
+        if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
+            methodName = String.format("with%s", InnerBuilderUtils.capitalize(fieldName));
+        } else {
+            methodName = fieldName;
+        }
+
+        final String parameterName = !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
+                BUILDER_SETTER_DEFAULT_PARAMETER_NAME :
+                BUILDER_SETTER_ALTERNATIVE_PARAMETER_NAME;
+        final PsiMethod varargsMethod = psiElementFactory.createMethod(methodName, builderType);
+        final PsiParameter setterParameter = psiElementFactory.createParameterFromText(fieldType.getCanonicalText() + "... " + parameterName, member.getPsiElement());
+        varargsMethod.getParameterList().add(setterParameter);
+
+        final PsiCodeBlock setterMethodBody = varargsMethod.getBody();
+        if (setterMethodBody != null) {
+            PsiType hashSet = PsiType.getTypeByName(CommonClassNames.JAVA_UTIL_HASH_SET, project, GlobalSearchScope.allScope(project));
+
+            String assignListText;
+            if (member.getElement().getType().isAssignableFrom(hashSet))
+                assignListText = "%s = new java.util.HashSet<%s>();";
+            else
+                assignListText = "%s = new java.util.ArrayList<%s>();";
+
+            final PsiStatement assignListStatement = psiElementFactory.createStatementFromText(
+                    String.format("if (%s == null) \n {", fieldName) +
+                            String.format(assignListText, fieldName, fieldType.getCanonicalText())+"\n}", varargsMethod);
+
+            final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
+                    "%s.addAll(java.util.Arrays.asList(%s));", fieldName, parameterName), varargsMethod);
+            setterMethodBody.add(assignListStatement);
+            setterMethodBody.add(assignStatement);
+            setterMethodBody.add(InnerBuilderUtils.createReturnThis(psiElementFactory, varargsMethod));
+        }
+        setSetterComment(varargsMethod, fieldName, parameterName);
+        if (currentOptions().contains(InnerBuilderOption.JACKSON_ANNOTATIONS)) {
+            varargsMethod.getModifierList().addAnnotation(JACKSON_JSON_IGNORE);
+        }
+        return varargsMethod;
     }
 
     private PsiMethod generateCopyBuilderMethod(final PsiClass topLevelClass, final PsiType builderType,
@@ -152,8 +236,8 @@ public class InnerBuilderGenerator implements Runnable {
             }
             if (options.contains(InnerBuilderOption.NEW_BUILDER_METHOD)) {
                 final PsiStatement newBuilderStatement = psiElementFactory.createStatementFromText(String.format(
-                                "%s builder = new %s(%s);", builderType.getPresentableText(),
-                                builderType.getPresentableText(), copyBuilderParameters.toString()),
+                        "%s builder = new %s(%s);", builderType.getPresentableText(),
+                        builderType.getPresentableText(), copyBuilderParameters.toString()),
                         copyBuilderMethod);
                 copyBuilderBody.add(newBuilderStatement);
 
@@ -161,8 +245,8 @@ public class InnerBuilderGenerator implements Runnable {
                 copyBuilderBody.add(psiElementFactory.createStatementFromText("return builder;", copyBuilderMethod));
             } else {
                 final PsiStatement newBuilderStatement = psiElementFactory.createStatementFromText(String.format(
-                                "return new %s(%s);", builderType.getPresentableText(),
-                                copyBuilderParameters.toString()),
+                        "return new %s(%s);", builderType.getPresentableText(),
+                        copyBuilderParameters.toString()),
                         copyBuilderMethod);
                 copyBuilderBody.add(newBuilderStatement);
             }
@@ -277,7 +361,7 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiCodeBlock newBuilderMethodBody = newBuilderMethod.getBody();
         if (newBuilderMethodBody != null) {
             final PsiStatement newStatement = psiElementFactory.createStatementFromText(String.format(
-                            "return new %s(%s);", builderType.getPresentableText(), fieldList.toString()),
+                    "return new %s(%s);", builderType.getPresentableText(), fieldList.toString()),
                     newBuilderMethod);
             newBuilderMethodBody.add(newStatement);
         }
@@ -304,9 +388,11 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiMethod setterMethod = psiElementFactory.createMethod(methodName, builderType);
         final boolean useJsr305 = options.contains(InnerBuilderOption.JSR305_ANNOTATIONS);
         final boolean useFindbugs = options.contains(InnerBuilderOption.FINDBUGS_ANNOTATION);
+        final boolean useJackson = options.contains(InnerBuilderOption.JACKSON_ANNOTATIONS);
 
         if (useJsr305) setterMethod.getModifierList().addAnnotation(JSR305_NONNULL);
         if (useFindbugs) setterMethod.getModifierList().addAnnotation(FINDBUGS_NONNULL);
+        if (useJackson) setterMethod.getModifierList().addAnnotation(JACKSON_JSON_SETTER);
 
         setterMethod.getModifierList().setModifierProperty(PsiModifier.PUBLIC, true);
         final PsiParameter setterParameter = psiElementFactory.createParameter(parameterName, fieldType);
@@ -353,9 +439,34 @@ public class InnerBuilderGenerator implements Runnable {
                     isFinal = modifierList.hasModifierProperty(PsiModifier.FINAL);
                 }
 
+                if (field.getModifierList().findAnnotation(JSR305_NONNULL)!=null || field.getModifierList().findAnnotation(FINDBUGS_NONNULL)!=null) {
+                    final PsiStatement checkNullStatement = psiElementFactory.createStatementFromText(String.format(
+                            "if(builder.%1$s == null) {\n throw new java.lang.IllegalArgumentException(\"%1$s cannot be null\");\n}\n", fieldName), constructor);
+                    constructorBody.add(checkNullStatement);
+                }
+
+                String wrapper = null;
+                String nullReplacement = null;
+                if (currentOptions().contains(InnerBuilderOption.IMMUTABLE_COLLECTIONS)) {
+                    if (field.getType().getCanonicalText().startsWith("java.util.Collection<")) {
+                        wrapper = "java.util.Collections.unmodifiableCollection";
+                        nullReplacement = "java.util.Collections.emptyList()";
+                    } else if (field.getType().getCanonicalText().startsWith("java.util.Set<")) {
+                        wrapper = "java.util.Collections.unmodifiableSet";
+                        nullReplacement = "java.util.Collections.emptySet()";
+                    } else if (field.getType().getCanonicalText().startsWith("java.util.List<")) {
+                        wrapper = "java.util.Collections.unmodifiableList";
+                        nullReplacement = "java.util.Collections.emptyList()";
+                    }
+                }
+
                 final String assignText;
                 if (setter == null || isFinal) {
-                    assignText = String.format("%1$s = builder.%1$s;", fieldName);
+                    if (wrapper == null) {
+                        assignText = String.format("%1$s = builder.%1$s;", fieldName);
+                    } else {
+                        assignText = String.format("%1$s = builder.%1$s == null ? %3$s : %2$s(builder.%1$s);", fieldName, wrapper, nullReplacement);
+                    }
                 } else {
                     assignText = String.format("%s(builder.%s);", setter.getName(), fieldName);
                 }

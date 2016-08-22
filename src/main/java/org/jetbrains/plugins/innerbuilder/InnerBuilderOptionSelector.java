@@ -18,7 +18,7 @@ public final class InnerBuilderOptionSelector {
     private static final List<SelectorOption> OPTIONS = createGeneratorOptions();
 
     private static List<SelectorOption> createGeneratorOptions() {
-        final List<SelectorOption> options = new ArrayList<SelectorOption>(8);
+        final List<SelectorOption> options = new ArrayList<SelectorOption>(9);
 
         options.add(
                 SelectorOption.newBuilder()
@@ -71,6 +71,29 @@ public final class InnerBuilderOptionSelector {
                         .withMnemonic('c')
                         .withToolTip("Add Javadoc to generated builder class and methods")
                         .withOption(InnerBuilderOption.WITH_JAVADOC)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Make collections immutable")
+                        .withMnemonic('i')
+                        .withToolTip("Wrap Collections with Collections.immutable")
+                        .withOption(InnerBuilderOption.IMMUTABLE_COLLECTIONS)
+                        .build());
+
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Create jackson annotations")
+                        .withMnemonic('x')
+                        .withToolTip("Create annotations to make jackson use builder")
+                        .withOption(InnerBuilderOption.JACKSON_ANNOTATIONS)
+                        .build());
+
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Create vararg overloads")
+                        .withMnemonic('v')
+                        .withToolTip("Create varargs overloads for collections")
+                        .withOption(InnerBuilderOption.VARARGS_OVERLOADS)
                         .build());
         return options;
     }

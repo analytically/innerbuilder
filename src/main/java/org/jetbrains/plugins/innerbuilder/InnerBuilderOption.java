@@ -8,7 +8,10 @@ public enum InnerBuilderOption {
     WITH_NOTATION("withNotation"),
     JSR305_ANNOTATIONS("useJSR305Annotations"),
     FINDBUGS_ANNOTATION("useFindbugsAnnotation"),
-    WITH_JAVADOC("withJavadoc");
+    WITH_JAVADOC("withJavadoc"),
+    IMMUTABLE_COLLECTIONS("immutableCollections"),
+    VARARGS_OVERLOADS("createVarargsOverloads"),
+    JACKSON_ANNOTATIONS("useJacksonAnnotations");
 
     private final String property;
 
