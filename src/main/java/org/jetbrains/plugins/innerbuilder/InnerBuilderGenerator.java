@@ -382,7 +382,9 @@ public class InnerBuilderGenerator implements Runnable {
             methodName = fieldName;
         }
 
-        final String parameterName = !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
+        final String parameterName = options.contains(InnerBuilderOption.FIELD_NAMES) ? 
+		fieldName :
+		!BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
                 BUILDER_SETTER_DEFAULT_PARAMETER_NAME :
                 BUILDER_SETTER_ALTERNATIVE_PARAMETER_NAME;
         final PsiMethod setterMethod = psiElementFactory.createMethod(methodName, builderType);
@@ -407,8 +409,11 @@ public class InnerBuilderGenerator implements Runnable {
         setterMethod.getParameterList().add(setterParameter);
         final PsiCodeBlock setterMethodBody = setterMethod.getBody();
         if (setterMethodBody != null) {
+	    final String actualFieldName =  options.contains(InnerBuilderOption.FIELD_NAMES) ?
+		    "this." + fieldName :
+		    fieldName;
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                    "%s = %s;", fieldName, parameterName), setterMethod);
+                    "%s = %s;", actualFieldName, parameterName), setterMethod);
             setterMethodBody.add(assignStatement);
             setterMethodBody.add(InnerBuilderUtils.createReturnThis(psiElementFactory, setterMethod));
         }

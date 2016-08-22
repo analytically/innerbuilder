@@ -11,7 +11,8 @@ public enum InnerBuilderOption {
     WITH_JAVADOC("withJavadoc"),
     IMMUTABLE_COLLECTIONS("immutableCollections"),
     VARARGS_OVERLOADS("createVarargsOverloads"),
-    JACKSON_ANNOTATIONS("useJacksonAnnotations");
+    JACKSON_ANNOTATIONS("useJacksonAnnotations"),
+    FIELD_NAMES("fieldNames");
 
     private final String property;
 
