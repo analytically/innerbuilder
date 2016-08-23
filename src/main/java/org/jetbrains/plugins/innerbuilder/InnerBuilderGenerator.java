@@ -462,6 +462,9 @@ public class InnerBuilderGenerator implements Runnable {
                     } else if (field.getType().getCanonicalText().startsWith("java.util.List<")) {
                         wrapper = "java.util.Collections.unmodifiableList";
                         nullReplacement = "java.util.Collections.emptyList()";
+                    }else if (field.getType().getCanonicalText().startsWith("java.util.Map<")) {
+                        wrapper = "java.util.Collections.unmodifiableMap";
+                        nullReplacement = "java.util.Collections.emptyMap()";
                     }
                 }
 
