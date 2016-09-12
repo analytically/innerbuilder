@@ -32,6 +32,8 @@ public class InnerBuilderGenerator implements Runnable {
     @NonNls
     private static final String JSR305_NONNULL = "javax.annotation.Nonnull";
     @NonNls
+    private static final String JSR303_NOTNULL = "javax.validation.constraints.NotNull";
+    @NonNls
     private static final String FINDBUGS_NONNULL = "edu.umd.cs.findbugs.annotations.NonNull";
     @NonNls
     private static final String JACKSON_JSON_IGNORE = "com.fasterxml.jackson.annotation.JsonIgnore";
@@ -444,7 +446,9 @@ public class InnerBuilderGenerator implements Runnable {
                     isFinal = modifierList.hasModifierProperty(PsiModifier.FINAL);
                 }
 
-                if (field.getModifierList().findAnnotation(JSR305_NONNULL)!=null || field.getModifierList().findAnnotation(FINDBUGS_NONNULL)!=null) {
+                if (field.getModifierList().findAnnotation(JSR305_NONNULL) != null
+                        || field.getModifierList().findAnnotation(FINDBUGS_NONNULL) != null
+                        || field.getModifierList().findAnnotation(JSR303_NOTNULL) != null) {
                     final PsiStatement checkNullStatement = psiElementFactory.createStatementFromText(String.format(
                             "if(builder.%1$s == null) {\n throw new java.lang.IllegalArgumentException(\"%1$s cannot be null\");\n}\n", fieldName), constructor);
                     constructorBody.add(checkNullStatement);
