@@ -4,7 +4,16 @@ import com.intellij.codeInsight.generation.PsiFieldMember;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.projectRoots.JavaSdkVersion;
+import com.intellij.openapi.projectRoots.JavaVersionService;
+import com.intellij.openapi.roots.LanguageLevelModuleExtensionImpl;
+import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.roots.impl.LanguageLevelProjectExtensionImpl;
+import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
@@ -178,16 +187,20 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiCodeBlock setterMethodBody = varargsMethod.getBody();
         if (setterMethodBody != null) {
             PsiType hashSet = PsiType.getTypeByName(CommonClassNames.JAVA_UTIL_HASH_SET, project, GlobalSearchScope.allScope(project));
-
+            boolean atLeast6 = isModuleLanguageLevelAtLeast7();
             String assignListText;
             if (member.getElement().getType().isAssignableFrom(hashSet))
-                assignListText = "%s = new java.util.HashSet<%s>();";
+                assignListText = atLeast6 ?
+                               String.format("%s = new java.util.HashSet<>();", fieldName)
+                             : String.format("%s = new java.util.HashSet<%s>();", fieldName, fieldType.getCanonicalText());
             else
-                assignListText = "%s = new java.util.ArrayList<%s>();";
+                assignListText = atLeast6 ?
+                               String.format("%s = new java.util.ArrayList<>();", fieldName)
+                             : String.format("%s = new java.util.ArrayList<%s>();", fieldName, fieldType.getCanonicalText());
 
             final PsiStatement assignListStatement = psiElementFactory.createStatementFromText(
                     String.format("if (%s == null) \n {", fieldName) +
-                            String.format(assignListText, fieldName, fieldType.getCanonicalText())+"\n}", varargsMethod);
+                            assignListText + "\n}", varargsMethod);
 
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
                     "%s.addAll(java.util.Arrays.asList(%s));", fieldName, parameterName), varargsMethod);
@@ -200,6 +213,13 @@ public class InnerBuilderGenerator implements Runnable {
             varargsMethod.getModifierList().addAnnotation(JACKSON_JSON_IGNORE);
         }
         return varargsMethod;
+    }
+
+    private boolean isModuleLanguageLevelAtLeast7() {
+        Module module = ProjectRootManager.getInstance(project).getFileIndex().getModuleForFile(file.getVirtualFile());
+        LanguageLevel languageLevel =module==null ? LanguageLevel.HIGHEST : LanguageLevelModuleExtensionImpl.getInstance(module).getLanguageLevel();
+        languageLevel = languageLevel == null ? LanguageLevel.HIGHEST : languageLevel;
+        return languageLevel.isAtLeast(LanguageLevel.JDK_1_7);
     }
 
     private PsiMethod generateCopyBuilderMethod(final PsiClass topLevelClass, final PsiType builderType,
@@ -283,10 +303,31 @@ public class InnerBuilderGenerator implements Runnable {
         if (methodBody == null) {
             return;
         }
+
         for (final PsiFieldMember member : fields) {
             final PsiField field = member.getElement();
-            final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                    "%s%2$s = copy.%2$s;", qName, field.getName()), method);
+            String copyStatement = String.format("copy.%s", field.getName());
+            String maybeType ;
+            if(isModuleLanguageLevelAtLeast7())
+            {
+                maybeType = "";
+            } else {
+                PsiType psiType = PsiUtil.extractIterableTypeParameter(field.getType(), false);
+                maybeType = psiType == null ? "" : psiType.getCanonicalText();
+            }
+
+            if (field.getType().getCanonicalText().startsWith("java.util.Collection<")) {
+                copyStatement = String.format("new java.util.ArrayList<%s>(%s)", maybeType, copyStatement);
+            } else if (field.getType().getCanonicalText().startsWith("java.util.Set<")) {
+                copyStatement = String.format("new java.util.HashSet<%s>(%s)", maybeType, copyStatement);
+            } else if (field.getType().getCanonicalText().startsWith("java.util.List<")) {
+                copyStatement = String.format("new java.util.ArrayList<%s>(%s)", maybeType, copyStatement);
+            } else if (field.getType().getCanonicalText().startsWith("java.util.Map<")) {
+                copyStatement = String.format("new java.util.LinkedHashMap<%s>(%s)", maybeType, copyStatement);
+            }
+
+            final PsiStatement assignStatement = psiElementFactory.createStatementFromText(
+                    String.format("%s%2$s = %3$s;", qName,field.getName(), copyStatement), method);
             methodBody.add(assignStatement);
         }
     }
@@ -457,18 +498,27 @@ public class InnerBuilderGenerator implements Runnable {
                 String wrapper = null;
                 String nullReplacement = null;
                 if (currentOptions().contains(InnerBuilderOption.IMMUTABLE_COLLECTIONS)) {
+                    String diamonds ;
+                    if(isModuleLanguageLevelAtLeast7())
+                    {
+                        diamonds = "";
+                    } else {
+                        PsiType psiType = PsiUtil.extractIterableTypeParameter(field.getType(), false);
+                        diamonds = psiType == null ? "" : "<" + psiType.getCanonicalText()+ ">";
+                    }
+
                     if (field.getType().getCanonicalText().startsWith("java.util.Collection<")) {
                         wrapper = "java.util.Collections.unmodifiableCollection";
-                        nullReplacement = "java.util.Collections.emptyList()";
+                        nullReplacement = String.format("java.util.Collections.%semptyList()", diamonds);
                     } else if (field.getType().getCanonicalText().startsWith("java.util.Set<")) {
                         wrapper = "java.util.Collections.unmodifiableSet";
-                        nullReplacement = "java.util.Collections.emptySet()";
+                        nullReplacement = String.format("java.util.Collections.%semptySet()", diamonds);
                     } else if (field.getType().getCanonicalText().startsWith("java.util.List<")) {
                         wrapper = "java.util.Collections.unmodifiableList";
-                        nullReplacement = "java.util.Collections.emptyList()";
+                        nullReplacement = String.format("java.util.Collections.%semptyList()", diamonds);
                     }else if (field.getType().getCanonicalText().startsWith("java.util.Map<")) {
                         wrapper = "java.util.Collections.unmodifiableMap";
-                        nullReplacement = "java.util.Collections.emptyMap()";
+                        nullReplacement = String.format("java.util.Collections.%semptyMap()", diamonds);
                     }
                 }
 
