@@ -5,10 +5,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.intellij.codeInsight.generation.PsiFieldMember;
-
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -102,17 +99,6 @@ public final class InnerBuilderUtils {
             return psiClass;
         else
             return null;
-    }
-
-    @Nullable
-    public static PsiClass getTopLevelClass(Project project, PsiFile file, Editor editor) {
-        final int offset = editor.getCaretModel().getOffset();
-        final PsiElement element = file.findElementAt(offset);
-        if (element == null) {
-            return null;
-        }
-
-        return PsiUtil.getTopLevelClass(element);
     }
 
     public static boolean isPrimitive(PsiField psiField) {
