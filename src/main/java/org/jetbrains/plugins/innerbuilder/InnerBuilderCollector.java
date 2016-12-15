@@ -64,7 +64,7 @@ public final class InnerBuilderCollector {
         for (final PsiField field : clazz.getFields()) {
 
             // check access to the field from the builder container class (eg. private superclass fields)
-            if (helper.isAccessible(field, accessObjectClass, clazz)
+            if (helper.isAccessible(field, clazz, accessObjectClass)
                     && !PsiTreeUtil.isAncestor(field, element, false)) {
 
                 // skip static fields
