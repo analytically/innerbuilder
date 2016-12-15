@@ -42,10 +42,6 @@ public final class InnerBuilderCollector {
 
         PsiClass classToExtractFieldsFrom = clazz;
         while (classToExtractFieldsFrom != null) {
-            if (classToExtractFieldsFrom.hasModifierProperty(PsiModifier.STATIC)) {
-                break;
-            }
-
             final List<PsiFieldMember> classFieldMembers = collectFieldsInClass(element, clazz,
                     classToExtractFieldsFrom);
             allFields.addAll(0, classFieldMembers);
