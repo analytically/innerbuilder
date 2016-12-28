@@ -1,19 +1,18 @@
 package org.jetbrains.plugins.innerbuilder;
 
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.intellij.codeInsight.generation.PsiFieldMember;
-
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiPrimitiveType;
@@ -80,15 +79,26 @@ public final class InnerBuilderUtils {
         return false;
     }
 
+    /**
+     * @param file   psi file
+     * @param editor editor
+     * @return psiClass if class is static or top level. Otherwise returns {@code null}
+     */
     @Nullable
-    public static PsiClass getTopLevelClass(Project project, PsiFile file, Editor editor) {
+    public static PsiClass getStaticOrTopLevelClass(PsiFile file, Editor editor) {
         final int offset = editor.getCaretModel().getOffset();
         final PsiElement element = file.findElementAt(offset);
         if (element == null) {
             return null;
         }
 
-        return PsiUtil.getTopLevelClass(element);
+        PsiClass topLevelClass = PsiUtil.getTopLevelClass(element);
+        PsiClass psiClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
+        if (psiClass != null && (psiClass.hasModifierProperty(PsiModifier.STATIC) ||
+                psiClass.getManager().areElementsEquivalent(psiClass, topLevelClass)))
+            return psiClass;
+        else
+            return null;
     }
 
     public static boolean isPrimitive(PsiField psiField) {

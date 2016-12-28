@@ -42,10 +42,6 @@ public final class InnerBuilderCollector {
 
         PsiClass classToExtractFieldsFrom = clazz;
         while (classToExtractFieldsFrom != null) {
-            if (classToExtractFieldsFrom.hasModifierProperty(PsiModifier.STATIC)) {
-                break;
-            }
-
             final List<PsiFieldMember> classFieldMembers = collectFieldsInClass(element, clazz,
                     classToExtractFieldsFrom);
             allFields.addAll(0, classFieldMembers);
@@ -64,7 +60,7 @@ public final class InnerBuilderCollector {
         for (final PsiField field : clazz.getFields()) {
 
             // check access to the field from the builder container class (eg. private superclass fields)
-            if (helper.isAccessible(field, accessObjectClass, clazz)
+            if (helper.isAccessible(field, clazz, accessObjectClass)
                     && !PsiTreeUtil.isAncestor(field, element, false)) {
 
                 // skip static fields

@@ -34,7 +34,7 @@ public class InnerBuilderHandler implements LanguageCodeInsightActionHandler {
             return false;
         }
 
-        return InnerBuilderUtils.getTopLevelClass(project, file, editor) != null && isApplicable(file, editor);
+        return InnerBuilderUtils.getStaticOrTopLevelClass(file, editor) != null && isApplicable(file, editor);
     }
 
     @Override
