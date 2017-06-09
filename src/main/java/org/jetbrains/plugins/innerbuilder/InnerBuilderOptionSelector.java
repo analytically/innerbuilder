@@ -58,6 +58,14 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
+                        .withCaption("Add @SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\") annotation")
+                        .withMnemonic('p')
+                        .withToolTip(
+                                "Add @SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\") annotation to the generated Builder class")
+                        .withOption(InnerBuilderOption.PMD_AVOID_FIELD_NAME_MATCHING_METHOD_NAME_ANNOTATION)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
                         .withCaption("Add Findbugs @NonNull annotation")
                         .withMnemonic('b')
                         .withToolTip(

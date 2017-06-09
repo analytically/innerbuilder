@@ -1,11 +1,12 @@
 <idea-plugin version="2" url="https://github.com/analytically/innerbuilder">
     <id>InnerBuilder</id>
     <name>InnerBuilder</name>
-    <version>1.1.3</version>
+    <version>1.1.4</version>
 
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
+      09.06.2017 - 1.1.4 - Added a new option to add @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName") to the generated builder.<br/>
       04.06.2016 - 1.1.3 - Added a new option to use field name for setters.<br/>
       30.04.2015 - 1.1.2 - Added more options to use JSR-305/Findbugs @Nonnull annotations and generate Javadoc.<br/>
       13.06.2014 - 1.1.1 - Bugfix for final fields in copy builder, thanks to neilg.<br/>

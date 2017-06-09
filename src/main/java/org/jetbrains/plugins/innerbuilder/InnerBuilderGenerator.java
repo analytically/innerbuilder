@@ -298,7 +298,7 @@ public class InnerBuilderGenerator implements Runnable {
             methodName = fieldName;
         }
 
-        final String parameterName = options.contains(InnerBuilderOption.FIELD_NAMES) ? 
+        final String parameterName = options.contains(InnerBuilderOption.FIELD_NAMES) ?
 		fieldName :
 		!BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
                 BUILDER_SETTER_DEFAULT_PARAMETER_NAME :
@@ -412,6 +412,7 @@ public class InnerBuilderGenerator implements Runnable {
         PsiUtil.setModifierProperty(builderClass, PsiModifier.STATIC, true);
         PsiUtil.setModifierProperty(builderClass, PsiModifier.FINAL, true);
         setBuilderComment(builderClass, targetClass);
+        setBuilderAnnotation(builderClass);
         return builderClass;
     }
 
@@ -477,6 +478,12 @@ public class InnerBuilderGenerator implements Runnable {
             str.append(targetClass.getName()).append("} builder static inner class.\n");
             str.append("*/");
             setStringComment(clazz, str.toString());
+        }
+    }
+
+    private void setBuilderAnnotation(final PsiClass clazz) {
+        if (currentOptions().contains(InnerBuilderOption.PMD_AVOID_FIELD_NAME_MATCHING_METHOD_NAME_ANNOTATION)) {
+            clazz.getModifierList().addAnnotation("SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\")");
         }
     }
 
