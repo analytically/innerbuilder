@@ -294,6 +294,8 @@ public class InnerBuilderGenerator implements Runnable {
         final String methodName;
         if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
             methodName = String.format("with%s", InnerBuilderUtils.capitalize(fieldName));
+        } else if(options.contains(InnerBuilderOption.SET_NOTATION)) {
+            methodName = String.format("set%s", InnerBuilderUtils.capitalize(fieldName));
         } else {
             methodName = fieldName;
         }
