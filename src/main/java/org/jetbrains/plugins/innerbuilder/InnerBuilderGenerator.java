@@ -200,7 +200,7 @@ public class InnerBuilderGenerator implements Runnable {
         for (final PsiFieldMember member : fields) {
             final PsiField field = member.getElement();
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                    "%s%2$s = copy.%2$s;", qName, field.getName()), method);
+                    "%s%2$s = copy.get%3$s();", qName, field.getName(), InnerBuilderUtils.capitalize(field.getName())), method);
             methodBody.add(assignStatement);
         }
     }
