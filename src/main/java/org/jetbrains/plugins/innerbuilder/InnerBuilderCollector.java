@@ -3,8 +3,12 @@ package org.jetbrains.plugins.innerbuilder;
 import static org.jetbrains.plugins.innerbuilder.InnerBuilderUtils.hasLowerCaseChar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.codeInsight.generation.PsiFieldMember;
@@ -60,7 +64,7 @@ public final class InnerBuilderCollector {
         for (final PsiField field : clazz.getFields()) {
 
             // check access to the field from the builder container class (eg. private superclass fields)
-            if (helper.isAccessible(field, clazz, accessObjectClass)
+            if ((helper.isAccessible(field, clazz, accessObjectClass) || hasSetter(clazz, field.getName()))
                     && !PsiTreeUtil.isAncestor(field, element, false)) {
 
                 // skip static fields
@@ -103,6 +107,19 @@ public final class InnerBuilderCollector {
         }
 
         return classFieldMembers;
+    }
+
+    private static boolean hasSetter(PsiClass clazz, String name)
+    {
+        for(int i = 0; i < clazz.getAllMethods().length; i++)
+        {
+            if(clazz.getAllMethods()[i].getName().equals(String.format("set%s", InnerBuilderUtils.capitalize(name))))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static PsiFieldMember buildFieldMember(final PsiField field, final PsiClass containingClass,
