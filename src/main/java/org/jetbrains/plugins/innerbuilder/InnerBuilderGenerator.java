@@ -200,7 +200,7 @@ public class InnerBuilderGenerator implements Runnable {
         for (final PsiFieldMember member : fields) {
             final PsiField field = member.getElement();
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                    "%s%2$s = copy.%2$s;", qName, field.getName()), method);
+                    "%s%2$s = copy.get%3$s();", qName, field.getName(), InnerBuilderUtils.capitalize(field.getName())), method);
             methodBody.add(assignStatement);
         }
     }
@@ -294,6 +294,8 @@ public class InnerBuilderGenerator implements Runnable {
         final String methodName;
         if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
             methodName = String.format("with%s", InnerBuilderUtils.capitalize(fieldName));
+        } else if(options.contains(InnerBuilderOption.SET_NOTATION)) {
+            methodName = String.format("set%s", InnerBuilderUtils.capitalize(fieldName));
         } else {
             methodName = fieldName;
         }

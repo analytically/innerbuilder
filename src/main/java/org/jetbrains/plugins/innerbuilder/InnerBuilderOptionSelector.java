@@ -49,6 +49,15 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
+                        .withCaption("Use 'set...' notation")
+                        .withMnemonic('t')
+                        .withToolTip(
+                                "Generate builder methods that start with 'set', for example: "
+                                        + "builder.setName(String name)")
+                        .withOption(InnerBuilderOption.SET_NOTATION)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
                         .withCaption("Add JSR-305 @Nonnull annotation")
                         .withMnemonic('j')
                         .withToolTip(

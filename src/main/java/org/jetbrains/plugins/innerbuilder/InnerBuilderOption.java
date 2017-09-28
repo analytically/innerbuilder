@@ -6,6 +6,7 @@ public enum InnerBuilderOption {
     NEW_BUILDER_METHOD("newBuilderMethod"),
     COPY_CONSTRUCTOR("copyConstructor"),
     WITH_NOTATION("withNotation"),
+    SET_NOTATION("setNotation"),
     JSR305_ANNOTATIONS("useJSR305Annotations"),
     FINDBUGS_ANNOTATION("useFindbugsAnnotation"),
     PMD_AVOID_FIELD_NAME_MATCHING_METHOD_NAME_ANNOTATION("suppressAvoidFieldNameMatchingMethodName"),
