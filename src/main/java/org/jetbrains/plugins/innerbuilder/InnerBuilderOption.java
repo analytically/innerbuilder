@@ -11,7 +11,9 @@ public enum InnerBuilderOption {
     FINDBUGS_ANNOTATION("useFindbugsAnnotation"),
     PMD_AVOID_FIELD_NAME_MATCHING_METHOD_NAME_ANNOTATION("suppressAvoidFieldNameMatchingMethodName"),
     WITH_JAVADOC("withJavadoc"),
-    FIELD_NAMES("fieldNames");
+    FIELD_NAMES("fieldNames"),
+    FINAL_PARAMETERS("finalParameters"),
+    BUILDER_NAME_HAS_TARGET_CLASS_NAME("builderTargetClassName");
 
     private final String property;
 

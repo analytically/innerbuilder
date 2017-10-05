@@ -90,15 +90,32 @@ public final class InnerBuilderOptionSelector {
                         .withOption(InnerBuilderOption.WITH_JAVADOC)
                         .build());
 
-	options.add(
-		SelectorOption.newBuilder()
-			.withCaption("Use field names in setter")
-			.withMnemonic('s')
-			.withToolTip(
-				"Generate builder methods that has the same parameter names in setter methods as field names, for example: "
-				+ "builder.withName(String fieldName)")
-			.withOption(InnerBuilderOption.FIELD_NAMES)
-			.build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Use field names in setter")
+                        .withMnemonic('s')
+                        .withToolTip(
+                                "Generate builder methods that has the same parameter names in setter methods as field names, for example: "
+                                        + "builder.withName(String fieldName)")
+                        .withOption(InnerBuilderOption.FIELD_NAMES)
+                        .build());
+
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Use target class name in builder name")
+                        .withMnemonic('e')
+                        .withToolTip(
+                                "Generate builder with name that includes target class name, for example: MyClassBuilder")
+                        .withOption(InnerBuilderOption.BUILDER_NAME_HAS_TARGET_CLASS_NAME)
+                        .build());
+
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Use final paramters for generated methods")
+                        .withMnemonic('r')
+                        .withToolTip("Parameters are final for all generated methods")
+                        .withOption(InnerBuilderOption.FINAL_PARAMETERS)
+                        .build());
 
         return options;
     }
@@ -164,5 +181,6 @@ public final class InnerBuilderOptionSelector {
         });
         return optionCheckBox;
     }
+
 }
 
