@@ -21,4 +21,4 @@ env:
   - GIT_AUTHOR_NAME: TravisCI
   - GIT_AUTHOR_EMAIL: noreply@travis-ci.org
   - CI_HOME=`pwd`/$TRAVIS_REPO_SLUG
-  - secure: j0qZap7xa4NlqMrMcspU2hTrltA2x1o7krsQzr/beD1BiiZWccXeJNvCc4uxhjKlS230PyVoT2WoNxLmWuv5iGOly51YcReMfprp9M8b5wP2Y2yiZJu5jKjh6RWbutXs47sSc0mn2CZM6D3qjaNzIpXzxpyHTyQWMVokvshITlw=
+  - secure: LXAjFSAiRS5x2bokW3Z07Xq2iOuwXPdrgPUpGZjKIltrzkPASvCyZZFAnNqnDAEkdfQAxnPGHPory53PkplakwnpVa8z9Ehw33sH5qMBsBxGJAtH+x7VEfpUdtw83hsU/mBD9D5evSyjN87rUABXX5BuM0l6gHprkGuxdNA7CEc=
