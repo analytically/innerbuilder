@@ -1,9 +1,9 @@
 innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.svg?branch=master)](https://travis-ci.org/analytically/innerbuilder)
 ============
 
-[IntelliJ IDEA](http://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
+[IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
 which generates an inner builder class as described in Effective Java. Works with IntelliJ IDEA 12.x, 13.x, 14.x, 
-15.x, 2016.x and 2017.x. Follow [@analytically](http://twitter.com/analytically) for updates.
+15.x, 2016.x and 2017.x. Follow [@analytically](https://twitter.com/analytically) for updates.
 
 ![screenshot](screenshot.png)
 
@@ -73,7 +73,7 @@ never remove any fields or methods.
 
 ### Rate
 
-If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](http://plugins.jetbrains.com/plugin/7354).
+If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](https://plugins.jetbrains.com/plugin/7354).
 
 ### Building
 
