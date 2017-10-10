@@ -16,9 +16,9 @@ after_success:
   - git push https://${GH_OAUTH_TOKEN}@github.com/${GH_USER_NAME}/${GH_PROJECT_NAME} 2>&1
 env:
   global:
-    - secure: wETu7SWmkKXQQI+pe5ypNG+SpJehCWy3pyaQInX30Wndvf+I+c3DOlPvvCB4Xu8m7L+R8x/jfxPFZv4H+JRBkyMKPGdm/9ooVFUfzZ+OZG3ajFyBQPnWy+9+QxqWxuvvKI1OTcgg+Lh1LX8c2vkViEr/qpIQXHEqCj8z0WC9yaM=
-    - GH_USER_NAME: analytically
-    - GH_PROJECT_NAME: innerbuilder
-    - GIT_AUTHOR_NAME: "TravisCI"
-    - GIT_AUTHOR_EMAIL: "noreply@travis-ci.org"
-    - CI_HOME=`pwd`/$TRAVIS_REPO_SLUG
+  - GH_USER_NAME: analytically
+  - GH_PROJECT_NAME: innerbuilder
+  - GIT_AUTHOR_NAME: TravisCI
+  - GIT_AUTHOR_EMAIL: noreply@travis-ci.org
+  - CI_HOME=`pwd`/$TRAVIS_REPO_SLUG
+  - secure: j0qZap7xa4NlqMrMcspU2hTrltA2x1o7krsQzr/beD1BiiZWccXeJNvCc4uxhjKlS230PyVoT2WoNxLmWuv5iGOly51YcReMfprp9M8b5wP2Y2yiZJu5jKjh6RWbutXs47sSc0mn2CZM6D3qjaNzIpXzxpyHTyQWMVokvshITlw=
