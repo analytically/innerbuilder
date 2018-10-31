@@ -289,7 +289,8 @@ public class InnerBuilderGenerator implements Runnable {
 
         final PsiField field = member.getElement();
         final PsiType fieldType = field.getType();
-        final String fieldName = field.getName();
+        final String fieldName = InnerBuilderUtils.hasOneLetterPrefix(field.getName()) ?
+                Character.toLowerCase(field.getName().charAt(1)) + field.getName().substring(2) : field.getName();
 
         final String methodName;
         if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
