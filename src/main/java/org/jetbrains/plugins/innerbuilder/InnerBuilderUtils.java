@@ -43,7 +43,13 @@ public final class InnerBuilderUtils {
     }
 
     public static String capitalize(String str) {
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+        return hasOneLetterPrefix(str) ?
+                Character.toUpperCase(str.charAt(1)) + str.substring(2) :
+                Character.toUpperCase(str.charAt(0)) + str.substring(1);
+    }
+
+    public static boolean hasOneLetterPrefix(String str) {
+        return Character.isLowerCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1));
     }
 
     static String stripJavaLang(String typeString) {
