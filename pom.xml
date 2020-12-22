@@ -28,7 +28,7 @@
                 <version>2.5.1</version>
                 <configuration>
                     <compilerArguments>
-                        <extdirs>${project.build.directory}/dependency/intellij-idea/lib/</extdirs>
+                        <extdirs>${project.build.directory}/dependency/intellij-idea/lib/:${project.build.directory}/dependency/intellij-idea/plugins/java/lib/:${project.build.directory}/dependency/intellij-idea/plugins/devkit/lib/</extdirs>
                     </compilerArguments>
                     <source>1.8</source>
                     <target>1.8</target>

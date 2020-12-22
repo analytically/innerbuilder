@@ -27,7 +27,7 @@
     <vendor email="mathias.bogaert@gmail.com" url="https://github.com/analytically">Mathias Bogaert</vendor>
 
     <!-- Intellij 12+ -->
-    <idea-version since-build="123" until-build="123.*"/>
+    <idea-version since-build="123" />
 
     <actions>
         <action id="InnerBuilder.generate"
