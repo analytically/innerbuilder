@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jetbrains.plugins</groupId>
     <artifactId>innerbuilder</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
     <packaging>jar</packaging>
     <name>InnerBuilder</name>
     <description>Adds a Builder action to the Generate menu (Alt+Insert) which generates an inner builder class as described in Effective Java</description>
@@ -30,8 +30,8 @@
                     <compilerArguments>
                         <extdirs>${project.build.directory}/dependency/intellij-idea/lib/</extdirs>
                     </compilerArguments>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
