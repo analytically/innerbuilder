@@ -77,7 +77,8 @@ If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](ht
 
 ### Building
 
-Run `mvn package`. It will download IntelliJ IDEA Community Edition to unpack jars and use them to compile the plugin.
+- Run `./prepare-build.sh` to download dependencies.
+- Run `mvn package`. It will download IntelliJ IDEA Community Edition to unpack jars and use them to compile the plugin.
 
 ### License
 
