@@ -1,11 +1,12 @@
 <idea-plugin url="https://github.com/analytically/innerbuilder">
     <id>InnerBuilder</id>
     <name>InnerBuilder</name>
-    <version>1.1.6</version>
+    <version>1.1.7</version>
 
     <description><![CDATA[${project.description}]]></description>
 
     <change-notes><![CDATA[
+      24.11.2021 - 1.1.7 - Work with latest Intellij IDEA and target JDK 17.<br/>
       22.12.2020 - 1.1.6 - Work with latest Intellij IDEA.<br/>
       14.09.2017 - 1.1.5 - Added 'set' notation.<br/>
       09.06.2017 - 1.1.4 - Added a new option to add @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName") to the generated builder.<br/>

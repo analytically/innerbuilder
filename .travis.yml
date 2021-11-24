@@ -1,5 +1,5 @@
 language: java
-jdk: openjdk11
+jdk: openjdk17
 before_install:
   - chmod +x prepare-build.sh
   - ./prepare-build.sh
