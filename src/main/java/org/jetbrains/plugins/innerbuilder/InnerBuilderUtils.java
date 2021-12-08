@@ -49,6 +49,7 @@ public final class InnerBuilderUtils {
     }
 
     public static boolean hasOneLetterPrefix(String str) {
+        if (str.length() == 1) return false;
         return Character.isLowerCase(str.charAt(0)) && Character.isUpperCase(str.charAt(1));
     }
 

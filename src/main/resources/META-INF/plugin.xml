@@ -5,6 +5,10 @@
 
     <description><![CDATA[${project.description}]]></description>
 
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.vcs</depends>
+
     <change-notes><![CDATA[
       24.11.2021 - 1.1.7 - Work with latest Intellij IDEA and target JDK 17.<br/>
       22.12.2020 - 1.1.6 - Work with latest Intellij IDEA.<br/>
