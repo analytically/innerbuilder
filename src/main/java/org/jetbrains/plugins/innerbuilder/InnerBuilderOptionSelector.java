@@ -75,15 +75,6 @@ public final class InnerBuilderOptionSelector {
                         .build());
         options.add(
                 SelectorOption.newBuilder()
-                        .withCaption("Add Findbugs @NonNull annotation")
-                        .withMnemonic('b')
-                        .withToolTip(
-                                "Add @NonNull annotations to generated methods and parameters, for example: "
-                                        + "@NonNull public Builder withName(@NonNull String name) { ... }")
-                        .withOption(InnerBuilderOption.FINDBUGS_ANNOTATION)
-                        .build());
-        options.add(
-                SelectorOption.newBuilder()
                         .withCaption("Add Javadoc")
                         .withMnemonic('c')
                         .withToolTip("Add Javadoc to generated builder class and methods")
