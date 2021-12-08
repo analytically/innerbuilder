@@ -493,7 +493,7 @@ public class InnerBuilderGenerator implements Runnable {
     private void setSetterComment(final PsiMethod method, final String fieldName, final String parameterName) {
         if (currentOptions().contains(InnerBuilderOption.WITH_JAVADOC)) {
             StringBuilder str = new StringBuilder("/**\n").append("* Sets the {@code ").append(fieldName);
-            str.append("} and returns a reference to this Builder so that the methods can be chained together.\n");
+            str.append("} and returns a reference to this Builder enabling method chaining.\n");
             str.append("* @param ").append(parameterName).append(" the {@code ");
             str.append(fieldName).append("} to set\n");
             str.append("* @return a reference to this Builder\n*/");
