@@ -109,12 +109,9 @@ public final class InnerBuilderCollector {
         return classFieldMembers;
     }
 
-    private static boolean hasSetter(PsiClass clazz, String name)
-    {
-        for(int i = 0; i < clazz.getAllMethods().length; i++)
-        {
-            if(clazz.getAllMethods()[i].getName().equals(String.format("set%s", InnerBuilderUtils.capitalize(name))))
-            {
+    private static boolean hasSetter(PsiClass clazz, String name) {
+        for (int i = 0; i < clazz.getAllMethods().length; i++) {
+            if (clazz.getAllMethods()[i].getName().equals(String.format("set%s", InnerBuilderUtils.capitalize(name)))) {
                 return true;
             }
         }

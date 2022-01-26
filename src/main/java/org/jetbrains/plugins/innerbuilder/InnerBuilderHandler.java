@@ -5,9 +5,9 @@ import static org.jetbrains.plugins.innerbuilder.InnerBuilderOptionSelector.sele
 
 import java.util.List;
 
+import com.intellij.openapi.editor.EditorModificationUtil;
 import org.jetbrains.annotations.NotNull;
 
-import com.intellij.codeInsight.CodeInsightUtilBase;
 import com.intellij.codeInsight.generation.PsiFieldMember;
 
 import com.intellij.lang.LanguageCodeInsightActionHandler;
@@ -57,7 +57,7 @@ public class InnerBuilderHandler implements LanguageCodeInsightActionHandler {
 
         psiDocumentManager.commitDocument(currentDocument);
 
-        if (!CodeInsightUtilBase.prepareEditorForWrite(editor)) {
+        if (!EditorModificationUtil.checkModificationAllowed(editor)) {
             return;
         }
 
