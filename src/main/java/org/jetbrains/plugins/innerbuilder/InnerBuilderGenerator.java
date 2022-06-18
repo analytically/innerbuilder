@@ -68,8 +68,8 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiMethod constructor = generateConstructor(targetClass, builderType);
 
         addMethod(targetClass, null, constructor, true);
-        final Collection<PsiFieldMember> finalFields = new ArrayList<PsiFieldMember>();
-        final Collection<PsiFieldMember> nonFinalFields = new ArrayList<PsiFieldMember>();
+        final Collection<PsiFieldMember> finalFields = new ArrayList<>();
+        final Collection<PsiFieldMember> nonFinalFields = new ArrayList<>();
 
         PsiElement lastAddedField = null;
         for (final PsiFieldMember fieldMember : selectedFields) {
@@ -153,7 +153,7 @@ public class InnerBuilderGenerator implements Runnable {
             if (options.contains(InnerBuilderOption.NEW_BUILDER_METHOD)) {
                 final PsiStatement newBuilderStatement = psiElementFactory.createStatementFromText(String.format(
                                 "%s builder = new %s(%s);", builderType.getPresentableText(),
-                                builderType.getPresentableText(), copyBuilderParameters.toString()),
+                                builderType.getPresentableText(), copyBuilderParameters),
                         copyBuilderMethod);
                 copyBuilderBody.add(newBuilderStatement);
 
@@ -162,7 +162,7 @@ public class InnerBuilderGenerator implements Runnable {
             } else {
                 final PsiStatement newBuilderStatement = psiElementFactory.createStatementFromText(String.format(
                                 "return new %s(%s);", builderType.getPresentableText(),
-                                copyBuilderParameters.toString()),
+                                copyBuilderParameters),
                         copyBuilderMethod);
                 copyBuilderBody.add(newBuilderStatement);
             }
@@ -277,7 +277,7 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiCodeBlock newBuilderMethodBody = newBuilderMethod.getBody();
         if (newBuilderMethodBody != null) {
             final PsiStatement newStatement = psiElementFactory.createStatementFromText(String.format(
-                            "return new %s(%s);", builderType.getPresentableText(), fieldList.toString()),
+                            "return new %s(%s);", builderType.getPresentableText(), fieldList),
                     newBuilderMethod);
             newBuilderMethodBody.add(newStatement);
         }

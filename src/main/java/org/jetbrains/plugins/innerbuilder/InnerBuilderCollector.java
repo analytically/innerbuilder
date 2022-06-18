@@ -3,12 +3,8 @@ package org.jetbrains.plugins.innerbuilder;
 import static org.jetbrains.plugins.innerbuilder.InnerBuilderUtils.hasLowerCaseChar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import org.jetbrains.annotations.Nullable;
 
 import com.intellij.codeInsight.generation.PsiFieldMember;
@@ -42,7 +38,7 @@ public final class InnerBuilderCollector {
             return null;
         }
 
-        final List<PsiFieldMember> allFields = new ArrayList<PsiFieldMember>();
+        final List<PsiFieldMember> allFields = new ArrayList<>();
 
         PsiClass classToExtractFieldsFrom = clazz;
         while (classToExtractFieldsFrom != null) {
@@ -58,12 +54,12 @@ public final class InnerBuilderCollector {
 
     private static List<PsiFieldMember> collectFieldsInClass(final PsiElement element, final PsiClass accessObjectClass,
             final PsiClass clazz) {
-        final List<PsiFieldMember> classFieldMembers = new ArrayList<PsiFieldMember>();
+        final List<PsiFieldMember> classFieldMembers = new ArrayList<>();
         final PsiResolveHelper helper = JavaPsiFacade.getInstance(clazz.getProject()).getResolveHelper();
 
         for (final PsiField field : clazz.getFields()) {
 
-            // check access to the field from the builder container class (eg. private superclass fields)
+            // check access to the field from the builder container class (e.g. private superclass fields)
             if ((helper.isAccessible(field, clazz, accessObjectClass) || hasSetter(clazz, field.getName()))
                     && !PsiTreeUtil.isAncestor(field, element, false)) {
 
