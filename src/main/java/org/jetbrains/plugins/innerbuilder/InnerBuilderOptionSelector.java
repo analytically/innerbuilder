@@ -18,7 +18,7 @@ public final class InnerBuilderOptionSelector {
     private static final List<SelectorOption> OPTIONS = createGeneratorOptions();
 
     private static List<SelectorOption> createGeneratorOptions() {
-        final List<SelectorOption> options = new ArrayList<SelectorOption>(8);
+        final List<SelectorOption> options = new ArrayList<SelectorOption>();
 
         options.add(
                 SelectorOption.newBuilder()
@@ -31,6 +31,12 @@ public final class InnerBuilderOptionSelector {
                         .withCaption("Generate static newBuilder() method")
                         .withMnemonic('n')
                         .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Rename newBuilder() to builder()")
+                        .withMnemonic('r')
+                        .withOption(InnerBuilderOption.RENAME_BUILDER_METHOD)
                         .build());
         options.add(
                 SelectorOption.newBuilder()

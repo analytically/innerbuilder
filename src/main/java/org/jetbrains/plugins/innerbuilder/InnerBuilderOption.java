@@ -4,6 +4,7 @@ public enum InnerBuilderOption {
 
     FINAL_SETTERS("finalSetters"),
     NEW_BUILDER_METHOD("newBuilderMethod"),
+    RENAME_BUILDER_METHOD("renameBuilderMethod"),
     COPY_CONSTRUCTOR("copyConstructor"),
     WITH_NOTATION("withNotation"),
     SET_NOTATION("setNotation"),
