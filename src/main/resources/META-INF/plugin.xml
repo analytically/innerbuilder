@@ -1,7 +1,7 @@
 <idea-plugin url="https://github.com/analytically/innerbuilder">
     <id>InnerBuilder</id>
     <name>InnerBuilder</name>
-    <version>1.1.9</version>
+    <version>1.2.0-SNAPSHOT</version>
 
     <description><![CDATA[${project.description}]]></description>
 
@@ -10,6 +10,7 @@
     <depends>com.intellij.modules.vcs</depends>
 
     <change-notes><![CDATA[
+      TODO add release date - 1.2.0 - Added a new option to rename the generated `newBuilder` to `builder`.<br/>
       08.12.2021 - 1.1.9 - Remove FindBugs, project is dead.<br/>
       08.12.2021 - 1.1.8 - Bugfixes.<br/>
       24.11.2021 - 1.1.7 - Work with latest Intellij IDEA and target JDK 17.<br/>

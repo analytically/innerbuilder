@@ -9,8 +9,6 @@ import com.intellij.ui.NonFocusableCheckBox;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,7 @@ public final class InnerBuilderOptionSelector {
     private static final List<SelectorOption> OPTIONS = createGeneratorOptions();
 
     private static List<SelectorOption> createGeneratorOptions() {
-        final List<SelectorOption> options = new ArrayList<SelectorOption>(8);
+        final List<SelectorOption> options = new ArrayList<>();
 
         options.add(
                 SelectorOption.newBuilder()
@@ -31,6 +29,12 @@ public final class InnerBuilderOptionSelector {
                         .withCaption("Generate static newBuilder() method")
                         .withMnemonic('n')
                         .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)
+                        .build());
+        options.add(
+                SelectorOption.newBuilder()
+                        .withCaption("Rename newBuilder() to builder()")
+                        .withMnemonic('r')
+                        .withOption(InnerBuilderOption.RENAME_BUILDER_METHOD)
                         .build());
         options.add(
                 SelectorOption.newBuilder()
@@ -110,9 +114,9 @@ public final class InnerBuilderOptionSelector {
 
         final JCheckBox[] optionCheckBoxes = buildOptionCheckBoxes();
 
-        final PsiFieldMember[] memberArray = members.toArray(new PsiFieldMember[members.size()]);
+        final PsiFieldMember[] memberArray = members.toArray(new PsiFieldMember[0]);
 
-        final MemberChooser<PsiFieldMember> chooser = new MemberChooser<PsiFieldMember>(memberArray,
+        final MemberChooser<PsiFieldMember> chooser = new MemberChooser<>(memberArray,
                 false, // allowEmptySelection
                 true,  // allowMultiSelection
                 project, null, optionCheckBoxes);
@@ -147,12 +151,7 @@ public final class InnerBuilderOptionSelector {
 
         final String optionProperty = option.getProperty();
         optionCheckBox.setSelected(propertiesComponent.isTrueValue(optionProperty));
-        optionCheckBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(final ItemEvent event) {
-                propertiesComponent.setValue(optionProperty, Boolean.toString(optionCheckBox.isSelected()));
-            }
-        });
+        optionCheckBox.addItemListener(event -> propertiesComponent.setValue(optionProperty, Boolean.toString(optionCheckBox.isSelected())));
         return optionCheckBox;
     }
 }
