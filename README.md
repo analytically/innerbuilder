@@ -3,9 +3,9 @@ innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.sv
 
 [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
 which generates an inner builder class as described in Effective Java. Works with IntelliJ IDEA 12.x, 13.x, 14.x, 
-15.x, 2016.x and 2017.x, 2018.x, 2019.x, 2020.x and 2021.x.
+15.x, 2016.x and 2017.x, 2018.x, 2019.x, 2020.x, 2021.x and 2022.x.
 
-![screenshot](screenshot.png)
+![screenshot](screenshot.png)w
 
 ```java
 public class YourTypicalBean {

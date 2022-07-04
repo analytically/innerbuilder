@@ -1,16 +1,16 @@
-<idea-plugin url="https://github.com/analytically/innerbuilder">
+<idea-plugin>
     <id>InnerBuilder</id>
     <name>InnerBuilder</name>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
 
-    <description><![CDATA[${project.description}]]></description>
+    <description>Adds a Builder action to Code>Generate which generates an inner builder class as described in Effective Java</description>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
     <depends>com.intellij.modules.vcs</depends>
 
     <change-notes><![CDATA[
-      TODO add release date - 1.2.0 - Added a new option to rename the generated `newBuilder` to `builder`.<br/>
+      04.07.2022 - 1.2.0 - Added a new option to rename the generated `newBuilder` to `builder`.<br/>
       08.12.2021 - 1.1.9 - Remove FindBugs, project is dead.<br/>
       08.12.2021 - 1.1.8 - Bugfixes.<br/>
       24.11.2021 - 1.1.7 - Work with latest Intellij IDEA and target JDK 17.<br/>
