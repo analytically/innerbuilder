@@ -1,14 +1,11 @@
 package org.jetbrains.plugins.innerbuilder;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.actions.BaseCodeInsightAction;
-
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The IntelliJ IDEA action for this plugin, generates an inner builder class as described in Effective Java.

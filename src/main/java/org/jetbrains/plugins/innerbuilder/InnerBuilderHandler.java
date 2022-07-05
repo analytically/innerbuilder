@@ -1,25 +1,21 @@
 package org.jetbrains.plugins.innerbuilder;
 
-import static org.jetbrains.plugins.innerbuilder.InnerBuilderCollector.collectFields;
-import static org.jetbrains.plugins.innerbuilder.InnerBuilderOptionSelector.selectFieldsAndOptions;
-
-import java.util.List;
-
-import com.intellij.openapi.editor.EditorModificationUtil;
-import org.jetbrains.annotations.NotNull;
-
 import com.intellij.codeInsight.generation.PsiFieldMember;
-
 import com.intellij.lang.LanguageCodeInsightActionHandler;
-
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
-
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+import static org.jetbrains.plugins.innerbuilder.InnerBuilderCollector.collectFields;
+import static org.jetbrains.plugins.innerbuilder.InnerBuilderOptionSelector.selectFieldsAndOptions;
 
 public class InnerBuilderHandler implements LanguageCodeInsightActionHandler {
 
