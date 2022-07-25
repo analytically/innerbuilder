@@ -1,16 +1,7 @@
 package org.jetbrains.plugins.innerbuilder;
 
-import static org.jetbrains.plugins.innerbuilder.InnerBuilderUtils.hasLowerCaseChar;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.intellij.codeInsight.generation.PsiFieldMember;
-
 import com.intellij.openapi.editor.Editor;
-
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -21,6 +12,12 @@ import com.intellij.psi.PsiResolveHelper;
 import com.intellij.psi.PsiSubstitutor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.TypeConversionUtil;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.jetbrains.plugins.innerbuilder.InnerBuilderUtils.hasLowerCaseChar;
 
 public final class InnerBuilderCollector {
     private InnerBuilderCollector() { }

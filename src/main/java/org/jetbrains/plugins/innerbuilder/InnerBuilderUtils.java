@@ -1,12 +1,6 @@
 package org.jetbrains.plugins.innerbuilder;
 
-import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.intellij.openapi.editor.Editor;
-
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
@@ -18,7 +12,11 @@ import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiPrimitiveType;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class InnerBuilderUtils {
     @NonNls
