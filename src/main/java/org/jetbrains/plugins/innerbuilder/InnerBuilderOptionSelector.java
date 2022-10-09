@@ -23,119 +23,108 @@ public final class InnerBuilderOptionSelector {
     private static List<SelectorOption> createGeneratorOptions() {
         final List<SelectorOption> options = new ArrayList<>();
 
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Generate builder methods for final fields")
-                .withMnemonic('f')
-                .withOption(InnerBuilderOption.FINAL_SETTERS)
-                .build());
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Generate static builder method")
-                .withMnemonic('n')
-                .withOption(InnerBuilderOption.NEW_BUILDER_METHOD)
-                .build());
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.FINAL_SETTERS,
+                "Generate builder methods for final fields",
+                'f')
+        );
 
-        options.add(
-            DropdownSelectorOption.newBuilder()
-                .withOption(InnerBuilderOption.STATIC_BUILDER_DROPDOWN)
-                .withCaption("Static builder naming")
-                .withToolTip("Select what the static builder method should look like.")
-                .withValues(List.of(
-                        DropdownSelectorOptionValue.newBuilder()
-                            .withCaption("newBuilder()")
-                            .withOption(InnerBuilderOption.STATIC_BUILDER_NEW_BUILDER_NAME)
-                            .build(),
-                        DropdownSelectorOptionValue.newBuilder()
-                            .withCaption("builder()")
-                            .withOption(InnerBuilderOption.STATIC_BUILDER_BUILDER_NAME)
-                            .build(),
-                        DropdownSelectorOptionValue.newBuilder()
-                            .withCaption("new[ClassName]()")
-                            .withOption(InnerBuilderOption.STATIC_BUILDER_NEW_CLASS_NAME)
-                            .build(),
-                    DropdownSelectorOptionValue.newBuilder()
-                        .withCaption("new[ClassName]Builder()")
-                        .withOption(InnerBuilderOption.STATIC_BUILDER_NEW_CLASS_NAME_BUILDER)
-                        .build()
-                    )
-                ).build());
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.NEW_BUILDER_METHOD,
+                "Generate static builder method",
+                'n')
+        );
 
-        options.add(
-            DropdownSelectorOption.newBuilder()
-                .withOption(InnerBuilderOption.BUILDER_METHOD_LOCATION_DROPDOWN)
-                .withCaption("Builder method location")
-                .withToolTip("Select where the builder method should be located.")
-                .withValues(List.of(
+        options.add(new DropdownSelectorOption(
+                InnerBuilderOption.STATIC_BUILDER_DROPDOWN,
+                "Static builder naming",
+                "Select what the static builder method should look like.",
+                List.of(
                         DropdownSelectorOptionValue.newBuilder()
-                            .withCaption("Inside parent class")
-                            .withOption(InnerBuilderOption.BUILDER_METHOD_IN_PARENT_CLASS)
-                            .build(),
+                                .withCaption("newBuilder()")
+                                .withOption(InnerBuilderOption.STATIC_BUILDER_NEW_BUILDER_NAME)
+                                .build(),
                         DropdownSelectorOptionValue.newBuilder()
-                            .withCaption("Inside generated Builder class")
-                            .withOption(InnerBuilderOption.BUILDER_METHOD_IN_BUILDER)
-                            .build()
-                    )
-                ).build());
+                                .withCaption("builder()")
+                                .withOption(InnerBuilderOption.STATIC_BUILDER_BUILDER_NAME)
+                                .build(),
+                        DropdownSelectorOptionValue.newBuilder()
+                                .withCaption("new[ClassName]()")
+                                .withOption(InnerBuilderOption.STATIC_BUILDER_NEW_CLASS_NAME)
+                                .build(),
+                        DropdownSelectorOptionValue.newBuilder()
+                                .withCaption("new[ClassName]Builder()")
+                                .withOption(InnerBuilderOption.STATIC_BUILDER_NEW_CLASS_NAME_BUILDER)
+                                .build()
+                )
+        ));
 
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Generate builder copy constructor")
-                .withMnemonic('o')
-                .withOption(InnerBuilderOption.COPY_CONSTRUCTOR)
-                .build());
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Use 'with...' notation")
-                .withMnemonic('w')
-                .withToolTip(
-                    "Generate builder methods that start with 'with', for example: "
+        options.add(new DropdownSelectorOption(
+                InnerBuilderOption.BUILDER_METHOD_LOCATION_DROPDOWN,
+                "Builder method location",
+                "Select where the builder method should be located.",
+                List.of(
+                        DropdownSelectorOptionValue.newBuilder()
+                                .withCaption("Inside parent class")
+                                .withOption(InnerBuilderOption.BUILDER_METHOD_IN_PARENT_CLASS)
+                                .build(),
+                        DropdownSelectorOptionValue.newBuilder()
+                                .withCaption("Inside generated Builder class")
+                                .withOption(InnerBuilderOption.BUILDER_METHOD_IN_BUILDER)
+                                .build()
+                )
+        ));
+
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.COPY_CONSTRUCTOR,
+                "Generate builder copy constructor",
+                'o'
+        ));
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.WITH_NOTATION,
+                "Use 'with...' notation",
+                'w',
+                "Generate builder methods that start with 'with', for example: "
                         + "builder.withName(String name)")
-                .withOption(InnerBuilderOption.WITH_NOTATION)
-                .build());
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Use 'set...' notation")
-                .withMnemonic('t')
-                .withToolTip(
-                    "Generate builder methods that start with 'set', for example: "
-                        + "builder.setName(String name)")
-                .withOption(InnerBuilderOption.SET_NOTATION)
-                .build());
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Add JSR-305 @Nonnull annotation")
-                .withMnemonic('j')
-                .withToolTip(
-                    "Add @Nonnull annotations to generated methods and parameters, for example: "
-                        + "@Nonnull public Builder withName(@Nonnull String name) { ... }")
-                .withOption(InnerBuilderOption.JSR305_ANNOTATIONS)
-                .build());
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Add @SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\") annotation")
-                .withMnemonic('p')
-                .withToolTip(
-                    "Add @SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\") annotation to the generated Builder class")
-                .withOption(InnerBuilderOption.PMD_AVOID_FIELD_NAME_MATCHING_METHOD_NAME_ANNOTATION)
-                .build());
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Add Javadoc")
-                .withMnemonic('c')
-                .withToolTip("Add Javadoc to generated builder class and methods")
-                .withOption(InnerBuilderOption.WITH_JAVADOC)
-                .build());
+        );
 
-        options.add(
-            CheckboxSelectorOption.newBuilder()
-                .withCaption("Use field names in setter")
-                .withMnemonic('s')
-                .withToolTip(
-                    "Generate builder methods that has the same parameter names in setter methods as field names, for example: "
-                        + "builder.withName(String fieldName)")
-                .withOption(InnerBuilderOption.FIELD_NAMES)
-                .build());
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.SET_NOTATION,
+                "Use 'set...' notation",
+                't',
+
+                "Generate builder methods that start with 'set', for example: "
+                        + "builder.setName(String name)")
+        );
+
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.JSR305_ANNOTATIONS,
+                "Add JSR-305 @Nonnull annotation",
+                'j',
+                "Add @Nonnull annotations to generated methods and parameters, for example: "
+                        + "@Nonnull public Builder withName(@Nonnull String name) { ... }")
+        );
+
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.PMD_AVOID_FIELD_NAME_MATCHING_METHOD_NAME_ANNOTATION,
+                "Add @SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\") annotation",
+                'p',
+                "Add @SuppressWarnings(\"PMD.AvoidFieldNameMatchingMethodName\") annotation to the generated Builder class")
+        );
+
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.WITH_JAVADOC,
+                "Add Javadoc",
+                'c',
+                "Add Javadoc to generated builder class and methods")
+        );
+
+        options.add(new CheckboxSelectorOption(
+                InnerBuilderOption.FIELD_NAMES,
+                "Use field names in setter",
+                's',
+                "Generate builder methods that has the same parameter names in setter methods as field names, for example: builder.withName(String fieldName)")
+        );
 
         return options;
     }
@@ -227,10 +216,10 @@ public final class InnerBuilderOptionSelector {
     private static DropdownSelectorOptionValue setSelectedComboBoxItem(PropertiesComponent propertiesComponent, DropdownSelectorOption selectorOption) {
         String selectedValue = propertiesComponent.getValue(selectorOption.getOption().getProperty());
         return selectorOption.getValues()
-            .stream()
-            .filter(it -> Objects.equals(it.getOption().getProperty(), selectedValue))
-            .findFirst()
-            .orElse(selectorOption.getValues().get(0));
+                .stream()
+                .filter(it -> Objects.equals(it.getOption().getProperty(), selectedValue))
+                .findFirst()
+                .orElse(selectorOption.getValues().get(0));
     }
 }
 
