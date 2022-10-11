@@ -2,44 +2,46 @@ innerbuilder [![Build Status](https://travis-ci.org/analytically/innerbuilder.sv
 ============
 
 [IntelliJ IDEA](https://www.jetbrains.com/idea/) plugin that adds a 'Builder' action to the Generate menu (Alt+Insert)
-which generates an inner builder class as described in Effective Java. Works with IntelliJ IDEA 2019.x, 2020.x, 2021.x and 2022.x.
+which generates an inner builder class as described in the Effective Java book. Works with IntelliJ IDEA 2019 and later.
 
 ![screenshot](screenshot.png)
 
 ```java
-public class YourTypicalBean {
+public class JavaBean {
     private final String foo;
-    private String bar, baz;
+    private String bar;
     private int qux;
+    private Double x,y;
 
-    private YourTypicalBean(Builder builder) {
+    private JavaBean(Builder builder) {
         foo = builder.foo;
         bar = builder.bar;
-        baz = builder.baz;
-        setQux(builder.qux);
+        qux = builder.qux;
+        x = builder.x;
+        y = builder.y;
     }
 
-    public void setQux(int qux) {
-        this.qux = qux;
+    public static Builder newJavaBean() {
+        return new Builder();
     }
 
     public static final class Builder {
-        private final String foo;
+        private String foo;
         private String bar;
-        private String baz;
         private int qux;
+        private Double x;
+        private Double y;
 
-        public Builder(String foo) {
-            this.foo = foo;
+        private Builder() {
+        }
+
+        public Builder foo(String val) {
+            foo = val;
+            return this;
         }
 
         public Builder bar(String val) {
             bar = val;
-            return this;
-        }
-
-        public Builder baz(String val) {
-            baz = val;
             return this;
         }
 
@@ -48,8 +50,18 @@ public class YourTypicalBean {
             return this;
         }
 
-        public YourTypicalBean build() {
-            return new YourTypicalBean(this);
+        public Builder x(Double val) {
+            x = val;
+            return this;
+        }
+
+        public Builder y(Double val) {
+            y = val;
+            return this;
+        }
+
+        public JavaBean build() {
+            return new JavaBean(this);
         }
     }
 }
@@ -72,7 +84,7 @@ never remove any fields or methods.
 
 ### Rate
 
-If you enjoy this plugin, please rate it on it's [plugins.jetbrains.com page](https://plugins.jetbrains.com/plugin/7354).
+If you enjoy this plugin, please rate it on its [plugins.jetbrains.com page](https://plugins.jetbrains.com/plugin/7354).
 
 ### Building
 
