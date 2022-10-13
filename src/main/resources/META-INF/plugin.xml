@@ -3,7 +3,7 @@
     <name>InnerBuilder</name>
     <version>1.3.1-SNAPSHOT</version>
 
-    <description>Adds a Builder action to Code>Generate which generates an inner builder class as described in Effective Java</description>
+    <description>Adds a Builder action to the Generate menu which generates an inner builder class as described in the Effective Java book</description>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
