@@ -69,7 +69,7 @@ public class JavaBean {
 
 ### Installation
 
-In IntelliJ IDEA 2019 or later, open `Preference` > `Plugins`, search for `innerbuilder`. It should show up in 
+In IntelliJ IDEA 2019 or later, open `Preferences...` > `Plugins`, search for `innerbuilder`. It should show up in 
 the plugin list, click `INSTALL`.
 
 #### Manual installation
@@ -84,12 +84,12 @@ never remove any fields or methods.
 
 ### Rate
 
-If you enjoy this plugin, please rate it on its [plugins.jetbrains.com page](https://plugins.jetbrains.com/plugin/7354).
+If you enjoy this plugin, please rate it on its [plugins.jetbrains.com page](https://plugins.jetbrains.com/plugin/7354-innerbuilder/).
 
 ### Building
 
-- Run `./prepare-build.sh` to download dependencies.
-- Run `mvn package`. It will download IntelliJ IDEA Community Edition to unpack jars and use them to compile the plugin.
+- Run `./prepare-build.sh` to download IntelliJ IDEA Community Edition
+- Run `mvn package`
 
 ### License
 
