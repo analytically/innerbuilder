@@ -108,8 +108,10 @@ public class InnerBuilderGenerator implements Runnable {
         }
 
         // builder constructor, accepting the final fields
-        final PsiMethod builderConstructorMethod = generateBuilderConstructor(builderClass, finalFields, options);
-        addMethod(builderClass, null, builderConstructorMethod, false);
+        if(finalFields.size() == 0 && !options.contains(InnerBuilderOption.NEW_BUILDER_METHOD)) {
+            final PsiMethod builderConstructorMethod = generateBuilderConstructor(builderClass, finalFields, options);
+            addMethod(builderClass, null, builderConstructorMethod, false);
+        }
 
         // builder copy constructor or static copy method
         if (options.contains(InnerBuilderOption.COPY_CONSTRUCTOR)) {
