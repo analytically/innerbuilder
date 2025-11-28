@@ -1,7 +1,5 @@
 # InnerBuilder
 
-[![Build Status](https://travis-ci.org/analytically/innerbuilder.svg?branch=master)](https://travis-ci.org/analytically/innerbuilder)
-
 [IntelliJ IDEA](https://www.jetbrains.com/idea/) [plugin](https://plugins.jetbrains.com/plugin/7354-innerbuilder/) that adds a **Builder** action to the Generate menu (Alt+Insert) which generates an inner builder class as described in Effective Java by Joshua Bloch.
 
 Works with IntelliJ IDEA and Android Studio 2019 and later.
@@ -269,7 +267,7 @@ mvn test
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 ```
-Copyright 2013-2024 Mathias Bogaert
+Copyright 2013-2025 Mathias Bogaert
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

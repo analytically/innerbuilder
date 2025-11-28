@@ -240,8 +240,18 @@ public class InnerBuilderGenerator implements Runnable {
         }
         for (final PsiFieldMember member : fields) {
             final PsiField field = member.getElement();
-            final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                "%s%2$s = copy.%3$s;", qName, field.getName(), field.getName()), method);
+            final String fieldName = field.getName();
+
+            // Use direct field access if public, otherwise use getter
+            final String accessExpr;
+            if (field.hasModifierProperty(PsiModifier.PUBLIC)) {
+                accessExpr = "copy." + fieldName;
+            } else {
+                accessExpr = String.format("copy.get%s()", InnerBuilderUtils.capitalize(fieldName));
+            }
+
+            final PsiStatement assignStatement = psiElementFactory.createStatementFromText(
+                String.format("%s%s = %s;", qName, fieldName, accessExpr), method);
             methodBody.add(assignStatement);
         }
     }
