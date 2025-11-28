@@ -194,7 +194,7 @@ public final class InnerBuilderOptionSelector {
     }
 
     private static JComponent buildDropdown(PropertiesComponent propertiesComponent, DropdownSelectorOption selectorOption) {
-        final ComboBox<DropdownSelectorOptionValue> comboBox = new ComboBox();
+        final ComboBox<DropdownSelectorOptionValue> comboBox = new ComboBox<>();
         comboBox.setEditable(false);
         comboBox.setRenderer(RENDERER);
         selectorOption.getValues().forEach(comboBox::addItem);

@@ -100,9 +100,10 @@ public class InnerBuilderGenerator implements Runnable {
         if (options.contains(InnerBuilderOption.NEW_BUILDER_METHOD)) {
             final PsiMethod newBuilderMethod = generateNewBuilderMethod(builderType, targetClass, finalFields, options);
 
-            final PsiClass builderTarget = options.contains(InnerBuilderOption.BUILDER_METHOD_IN_PARENT_CLASS) ?
-                targetClass :
-                builderClass;
+            // Default to parent class (matches UI default - first dropdown item)
+            final PsiClass builderTarget = options.contains(InnerBuilderOption.BUILDER_METHOD_IN_BUILDER) ?
+                builderClass :
+                targetClass;
 
             addMethod(builderTarget, null, newBuilderMethod, false);
         }
@@ -240,7 +241,7 @@ public class InnerBuilderGenerator implements Runnable {
         for (final PsiFieldMember member : fields) {
             final PsiField field = member.getElement();
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
-                    "%s%2$s = copy.%3$s;", qName, field.getName(), field.getName()), method);
+                "%s%2$s = copy.%3$s;", qName, field.getName(), field.getName()), method);
             methodBody.add(assignStatement);
         }
     }
@@ -323,21 +324,24 @@ public class InnerBuilderGenerator implements Runnable {
 
         final PsiField field = member.getElement();
         final PsiType fieldType = field.getType();
-        final String fieldName = InnerBuilderUtils.hasOneLetterPrefix(field.getName()) ?
-            Character.toLowerCase(field.getName().charAt(1)) + field.getName().substring(2) : field.getName();
+        final String rawFieldName = field.getName();
+
+        // Strip one-letter prefix (e.g., mAppId -> appId) for method naming only
+        final String strippedFieldName = InnerBuilderUtils.hasOneLetterPrefix(rawFieldName) ?
+            Character.toLowerCase(rawFieldName.charAt(1)) + rawFieldName.substring(2) : rawFieldName;
 
         final String methodName;
         if (options.contains(InnerBuilderOption.WITH_NOTATION)) {
-            methodName = String.format("with%s", InnerBuilderUtils.capitalize(fieldName));
+            methodName = String.format("with%s", InnerBuilderUtils.capitalize(strippedFieldName));
         } else if (options.contains(InnerBuilderOption.SET_NOTATION)) {
-            methodName = String.format("set%s", InnerBuilderUtils.capitalize(fieldName));
+            methodName = String.format("set%s", InnerBuilderUtils.capitalize(strippedFieldName));
         } else {
-            methodName = fieldName;
+            methodName = strippedFieldName;
         }
 
         final String parameterName = options.contains(InnerBuilderOption.FIELD_NAMES) ?
-            fieldName :
-            !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(fieldName) ?
+            strippedFieldName :
+            !BUILDER_SETTER_DEFAULT_PARAMETER_NAME.equals(strippedFieldName) ?
                 BUILDER_SETTER_DEFAULT_PARAMETER_NAME :
                 BUILDER_SETTER_ALTERNATIVE_PARAMETER_NAME;
         final PsiMethod setterMethod = psiElementFactory.createMethod(methodName, builderType);
@@ -358,14 +362,14 @@ public class InnerBuilderGenerator implements Runnable {
         final PsiCodeBlock setterMethodBody = setterMethod.getBody();
         if (setterMethodBody != null) {
             final String actualFieldName = options.contains(InnerBuilderOption.FIELD_NAMES) ?
-                "this." + fieldName :
-                fieldName;
+                "this." + rawFieldName :
+                rawFieldName;
             final PsiStatement assignStatement = psiElementFactory.createStatementFromText(String.format(
                 "%s = %s;", actualFieldName, parameterName), setterMethod);
             setterMethodBody.add(assignStatement);
             setterMethodBody.add(InnerBuilderUtils.createReturnThis(psiElementFactory, setterMethod));
         }
-        setSetterComment(setterMethod, fieldName, parameterName);
+        setSetterComment(setterMethod, strippedFieldName, parameterName);
         return setterMethod;
     }
 

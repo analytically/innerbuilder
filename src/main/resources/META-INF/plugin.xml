@@ -10,6 +10,7 @@
     <depends>com.intellij.modules.vcs</depends>
 
     <change-notes><![CDATA[
+      16.19.2022 - 1.3.1 - Use field reference instead of getter in copy body.<br/>
       09.10.2022 - 1.3.0 - Drop compatibility with Intellij IDEA < IU-193 (2019.3). Added builder style selection dropdown, added option to select where the generated Builder method is set (inside parent class or generated Builder class).<br/>
       04.07.2022 - 1.2.0 - Added a new option to rename the generated `newBuilder` to `builder`.<br/>
       08.12.2021 - 1.1.9 - Remove FindBugs, project is dead.<br/>
