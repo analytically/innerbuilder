@@ -178,6 +178,8 @@ When generating a builder for a class that already has one, the plugin will:
 | **Add Javadoc** | Generate documentation for builder | `/** Sets the name... */` |
 | **Use field names in setter** | Use field name as parameter name | `withName(String name)` vs `withName(String val)` |
 
+By default, the static factory method is placed in the outer class, as shown in Example Output. This choice is remembered between invocations; select **Inside generated Builder class** to place it inside `Builder` instead.
+
 ## Configuration Persistence
 
 All options are remembered between invocations. Settings are stored per-project in IntelliJ's PropertiesComponent.
